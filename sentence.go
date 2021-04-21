@@ -195,12 +195,8 @@ func Parse(raw string) (Sentence, error) {
 			return newGSV(s)
 		case TypeHDT:
 			return newHDT(s)
-		case TypeHEV:
-			return newHEV(s)
 		case TypeGNS:
 			return newGNS(s)
-		case TypeMDA:
-			return newMDA(s)
 		case TypeTHS:
 			return newTHS(s)
 		case TypeWPL:
@@ -215,6 +211,18 @@ func Parse(raw string) (Sentence, error) {
 			return newDBT(s)
 		case TypeDBS:
 			return newDBS(s)
+		case TypeHEV:
+			return newHEV(s)
+		case TypeMDA:
+			return newMDA(s)
+		case TypeMWD:
+			return newMWD(s)
+		case TypeMWV:
+			return newMWV(s)
+		case TypeROT:
+			return newROT(s)
+		case TypeVWR:
+			return newVWR(s)
 		}
 	}
 	if strings.HasPrefix(s.Raw, SentenceStartEncapsulated) {
