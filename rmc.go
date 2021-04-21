@@ -1,5 +1,12 @@
 package nmea
 
+import (
+	"fmt"
+	"time"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	// TypeRMC type for RMC sentences
 	TypeRMC = "RMC"
@@ -42,4 +49,57 @@ func newRMC(s BaseSentence) (RMC, error) {
 		m.Variation.Value = 0 - m.Variation.Value
 	}
 	return m, p.Err()
+}
+
+// GetMagneticVariation retrieves the magnetic variation from the sentence
+func (s RMC) GetMagneticVariation() (float64, error) {
+	if v, err := s.Variation.GetValue(); err == nil && s.Validity == ValidRMC {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetTrueCourseOverGround retrieves the true course over ground from the sentence
+func (s RMC) GetTrueCourseOverGround() (float64, error) {
+	if v, err := s.Course.GetValue(); err == nil && s.Validity == ValidRMC {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetPosition2D retrieves the latitude and longitude from the sentence
+func (s RMC) GetPosition2D() (float64, float64, error) {
+	if s.Validity == ValidRMC {
+		if vLat, err := s.Latitude.GetValue(); err == nil {
+			if vLon, err := s.Longitude.GetValue(); err == nil {
+				return vLat, vLon, nil
+			}
+		}
+	}
+	return 0, 0, fmt.Errorf("value is unavailable")
+}
+
+// GetSpeedOverGround retrieves the speed over ground from the sentence
+func (s RMC) GetSpeedOverGround() (float64, error) {
+	if v, err := s.Speed.GetValue(); err == nil && s.Validity == ValidRMC {
+		return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetDateTime retrieves the date and time in RFC3339Nano format
+func (s RMC) GetDateTime() (string, error) {
+	if s.Date.Valid && s.Time.Valid {
+		return time.Date(
+			s.Date.YY,
+			time.Month(s.Date.MM),
+			s.Date.DD,
+			s.Time.Hour,
+			s.Time.Minute,
+			s.Time.Second,
+			s.Time.Millisecond*1000000,
+			time.UTC,
+		).UTC().Format(time.RFC3339Nano), nil
+	}
+	return "", fmt.Errorf("value is unavailable")
 }

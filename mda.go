@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	TypeMDA = "MDA"
 )
@@ -58,4 +64,74 @@ func newMDA(s BaseSentence) (MDA, error) {
 		WindSpeedInMetersPerSecond:          p.Float64(18, "WindSpeedInMetersPerSecond"),
 	}
 	return m, p.Err()
+}
+
+// GetTrueWindDirection retrieves the true wind direction from the sentence
+func (s MDA) GetTrueWindDirection() (float64, error) {
+	if v, err := s.WindDirectionTrue.GetValue(); err == nil {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetMagneticWindDirection retrieves the true wind direction from the sentence
+func (s MDA) GetMagneticWindDirection() (float64, error) {
+	if v, err := s.WindDirectionMagnetic.GetValue(); err == nil {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetWindSpeed retrieves wind speed from the sentence
+func (s MDA) GetWindSpeed() (float64, error) {
+	if v, err := s.WindSpeedInMetersPerSecond.GetValue(); err == nil {
+		return v, nil
+	}
+	if v, err := s.WindSpeedInKnots.GetValue(); err == nil {
+		return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetOutsideTemperature retrieves the outside air temperature from the sentence
+func (s MDA) GetOutsideTemperature() (float64, error) {
+	if v, err := s.AirTemperature.GetValue(); err == nil {
+		return unit.FromCelsius(v).Kelvin(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetOutsideTemperature retrieves the outside air temperature from the sentence
+func (s MDA) GetWaterTemperature() (float64, error) {
+	if v, err := s.WaterTemperature.GetValue(); err == nil {
+		return unit.FromCelsius(v).Kelvin(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetDewPointTemperature retrieves the dew point temperature from the sentence
+func (s MDA) GetDewPointTemperature() (float64, error) {
+	if v, err := s.DewPoint.GetValue(); err == nil {
+		return unit.FromCelsius(v).Kelvin(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetOutsidePressure retrieves the outside pressure from the sentence
+func (s MDA) GetOutsidePressure() (float64, error) {
+	if v, err := s.BarometricPressureInBar.GetValue(); err == nil {
+		return (unit.Pressure(v) * unit.Bar).Pascals(), nil
+	}
+	if v, err := s.BarometricPressureInInchesOfMercury.GetValue(); err == nil {
+		return (unit.Pressure(v) * unit.InchOfMercury).Pascals(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetHumidity retrieves the relative humidity from the sentence
+func (s MDA) GetHumidity() (float64, error) {
+	if v, err := s.RelativeHumidity.GetValue(); err == nil {
+		return v / 100.0, nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

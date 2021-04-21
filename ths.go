@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	// TypeTHS type for THS sentences
 	TypeTHS = "THS"
@@ -33,4 +39,12 @@ func newTHS(s BaseSentence) (THS, error) {
 		Status:       p.EnumString(1, "status", AutonomousTHS, EstimatedTHS, ManualTHS, SimulatorTHS, InvalidTHS),
 	}
 	return m, p.Err()
+}
+
+// GetTrueHeading retrieves the true heading from the sentence
+func (s THS) GetTrueHeading() (float64, error) {
+	if v, err := s.Heading.GetValue(); err == nil && s.Status != InvalidTHS {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

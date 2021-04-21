@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeGLL type for GLL sentences
 	TypeGLL = "GLL"
@@ -30,4 +32,16 @@ func newGLL(s BaseSentence) (GLL, error) {
 		Time:         p.Time(4, "time"),
 		Validity:     p.EnumString(5, "validity", ValidGLL, InvalidGLL),
 	}, p.Err()
+}
+
+// GetPosition2D retrieves the 2D position from the sentence
+func (s GLL) GetPosition2D() (float64, float64, error) {
+	if s.Validity == ValidGLL {
+		if vLat, err := s.Latitude.GetValue(); err == nil {
+			if vLon, err := s.Longitude.GetValue(); err == nil {
+				return vLat, vLon, nil
+			}
+		}
+	}
+	return 0, 0, fmt.Errorf("value is unavailable")
 }

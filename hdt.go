@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	// TypeHDT type for HDT sentences
 	TypeHDT = "HDT"
@@ -23,4 +29,12 @@ func newHDT(s BaseSentence) (HDT, error) {
 		True:         p.EnumString(1, "true", "T") == "T",
 	}
 	return m, p.Err()
+}
+
+// GetTrueHeading retrieves the true heading from the sentence
+func (s HDT) GetTrueHeading() (float64, error) {
+	if v, err := s.Heading.GetValue(); err == nil && s.True {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

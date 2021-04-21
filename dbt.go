@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	// TypeDBT type for DBT sentences
 	TypeDBT = "DBT"
@@ -24,4 +30,18 @@ func newDBT(s BaseSentence) (DBT, error) {
 		DepthMeters:  p.Float64(2, "depth_meters"),
 		DepthFathoms: p.Float64(4, "depth_fathoms"),
 	}, p.Err()
+}
+
+// GetDepthBelowTransducer retrieves the depth below the transducer from the sentence
+func (s DBT) GetDepthBelowTransducer() (float64, error) {
+	if v, err := s.DepthMeters.GetValue(); err == nil {
+		return v, nil
+	}
+	if v, err := s.DepthFeet.GetValue(); err == nil {
+		return (unit.Length(v) * unit.Foot).Meters(), nil
+	}
+	if v, err := s.DepthFathoms.GetValue(); err == nil {
+		return (unit.Length(v) * unit.Fathom).Meters(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

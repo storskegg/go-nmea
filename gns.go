@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeGNS type for GNS sentences
 	TypeGNS = "GNS"
@@ -56,4 +58,30 @@ func newGNS(s BaseSentence) (GNS, error) {
 		Station:      p.Int64(11, "station"),
 	}
 	return m, p.Err()
+}
+
+// GetPosition3D retrieves the 3D position from the sentence
+func (s GNS) GetPosition3D() (float64, float64, float64, error) {
+	validModi := map[string]interface{}{
+		AutonomousGNS:        nil,
+		DifferentialGNS:      nil,
+		PreciseGNS:           nil,
+		RealTimeKinematicGNS: nil,
+		FloatRTKGNS:          nil,
+		EstimatedGNS:         nil,
+		ManualGNS:            nil,
+		SimulatorGNS:         nil,
+	}
+	for _, m := range s.Mode {
+		if _, ok := validModi[m]; ok {
+			if vLat, err := s.Latitude.GetValue(); err == nil {
+				if vLon, err := s.Longitude.GetValue(); err == nil {
+					if vAlt, err := s.Altitude.GetValue(); err == nil {
+						return vLat, vLon, vAlt, nil
+					}
+				}
+			}
+		}
+	}
+	return 0, 0, 0, fmt.Errorf("value is unavailable")
 }

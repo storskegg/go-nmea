@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeGGA type for GGA sentences
 	TypeGGA = "GGA"
@@ -51,4 +53,31 @@ func newGGA(s BaseSentence) (GGA, error) {
 		DGPSAge:       p.String(12, "dgps age"),
 		DGPSId:        p.String(13, "dgps id"),
 	}, p.Err()
+}
+
+// GetNumberOfSatellites retrieves the number of satelites from the sentence
+func (s GGA) GetNumberOfSatellites() (int64, error) {
+	if v, err := s.NumSatellites.GetValue(); err == nil {
+		return v, nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetPosition3D retrieves the 3D position from the sentence
+func (s GGA) GetPosition3D() (float64, float64, float64, error) {
+	if s.FixQuality == GPS || s.FixQuality == DGPS {
+		if vLat, err := s.Latitude.GetValue(); err == nil {
+			if vLon, err := s.Longitude.GetValue(); err == nil {
+				if vAlt, err := s.Altitude.GetValue(); err == nil {
+					return vLat, vLon, vAlt, nil
+				}
+			}
+		}
+	}
+	return 0, 0, 0, fmt.Errorf("value is unavailable")
+}
+
+// GetFixQuality retrieves the fix quality from the sentence
+func (s GGA) GetFixQuality() (string, error) {
+	return s.FixQuality, nil
 }

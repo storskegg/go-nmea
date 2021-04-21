@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeDPT type for DPT sentences
 	TypeDPT = "DPT"
@@ -24,4 +26,32 @@ func newDPT(s BaseSentence) (DPT, error) {
 		Offset:       p.Float64(1, "offset"),
 		RangeScale:   p.Float64(2, "range scale"),
 	}, p.Err()
+}
+
+// GetDepthBelowTransducer retrieves the depth below the keel from the sentence
+func (s DPT) GetDepthBelowTransducer() (float64, error) {
+	if v, err := s.Depth.GetValue(); err == nil {
+		return v, nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetDepthBelowKeel retrieves the depth below the keel from the sentence
+func (s DPT) GetDepthBelowKeel() (float64, error) {
+	if vDepth, err := s.Depth.GetValue(); err == nil {
+		if vOffset, err := s.Offset.GetValue(); err == nil && vOffset < 0 {
+			return vDepth + vOffset, nil
+		}
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetDepthBelowSurface retrieves the depth below surface from the sentence
+func (s DPT) GetDepthBelowSurface() (float64, error) {
+	if vDepth, err := s.Depth.GetValue(); err == nil {
+		if vOffset, err := s.Offset.GetValue(); err == nil && vOffset > 0 {
+			return vDepth + vOffset, nil
+		}
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

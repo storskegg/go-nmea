@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeGSV type for GSV sentences
 	TypeGSV = "GSV"
@@ -45,4 +47,12 @@ func newGSV(s BaseSentence) (GSV, error) {
 		})
 	}
 	return m, p.Err()
+}
+
+// GetNumberOfSatelites retrieves the number of satelites from the sentence
+func (s GSV) GetNumberOfSatellites() (int64, error) {
+	if v, err := s.NumberSVsInView.GetValue(); err == nil {
+		return v, nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	TypeROT = "ROT"
 
@@ -28,4 +34,12 @@ func newROT(s BaseSentence) (ROT, error) {
 		Status:       p.EnumString(1, "status", ValidROT, InvalidROT),
 	}
 	return m, p.Err()
+}
+
+// GetRateOfTurn retrieves the rate of turn from the sentence
+func (s ROT) GetRateOfTurn() (float64, error) {
+	if v, err := s.RateOfTurn.GetValue(); err == nil && s.Status == ValidROT {
+		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }

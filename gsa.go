@@ -48,3 +48,13 @@ func newGSA(s BaseSentence) (GSA, error) {
 	m.VDOP = p.Float64(16, "vdop")
 	return m, p.Err()
 }
+
+// GetNumberOfSatellites retrieves the number of satelites from the sentence
+func (s GSA) GetNumberOfSatellites() (int64, error) {
+	return int64(len(s.SV)), nil
+}
+
+// GetFixType retrieves the fix type from the sentence
+func (s GSA) GetFixType() (string, error) {
+	return s.FixType, nil
+}

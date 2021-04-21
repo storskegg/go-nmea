@@ -3,6 +3,7 @@ package nmea
 import (
 	"testing"
 
+	"github.com/BertoldVdb/go-ais"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,6 +22,7 @@ var vdmtests = []struct {
 			MessageID:      Int64{Valid: false, Value: 0},
 			Channel:        "A",
 			Payload:        []byte{0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0},
+			Packet:         ais.PositionReport{Header: ais.Header{MessageID: 0x1, RepeatIndicator: 0x0, UserID: 0xe95fc02}, Valid: true, NavigationalStatus: 0x0, RateOfTurn: -128, Sog: 5, PositionAccuracy: true, Longitude: 6.608731666666667, Latitude: 51.56676166666667, Cog: 113, TrueHeading: 0x1ff, Timestamp: 0x37, SpecialManoeuvreIndicator: 0x1, Spare: 0x0, Raim: true, CommunicationStateNoItdma: ais.CommunicationStateNoItdma{CommunicationState: 0xea0c}},
 		},
 	},
 	{
@@ -32,6 +34,7 @@ var vdmtests = []struct {
 			MessageID:      Int64{Valid: false, Value: 0},
 			Channel:        "A",
 			Payload:        []byte{0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+			Packet:         ais.StaticDataReport{Header: ais.Header{MessageID: 0x18, RepeatIndicator: 0x0, UserID: 0x1c7da3ba}, Valid: true, Reserved: 0x0, PartNumber: false, ReportA: ais.StaticDataReportA{Valid: true, Name: "LAISSEZFAIRE22"}, ReportB: ais.StaticDataReportB{Valid: false, ShipType: 0x0, VendorIDName: "", VenderIDModel: 0x0, VenderIDSerial: 0x0, CallSign: "", Dimension: ais.FieldDimension{A: 0x0, B: 0x0, C: 0x0, D: 0x0}, FixType: 0x0, Spare: 0x0}},
 		},
 	},
 	{

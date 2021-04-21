@@ -1,5 +1,11 @@
 package nmea
 
+import (
+	"fmt"
+
+	"github.com/martinlindhe/unit"
+)
+
 const (
 	TypeMWV = "MWV"
 
@@ -52,4 +58,39 @@ func newMWV(s BaseSentence) (MWV, error) {
 		Status:        p.EnumString(4, "Status", ValidMWV, InvalidMWV),
 	}
 	return m, p.Err()
+}
+
+// GetTrueWindDirection retrieves the true wind direction from the sentence
+func (s MWV) GetTrueWindDirection() (float64, error) {
+	if s.Status == ValidMWV && s.Reference == ReferenceTrue {
+		if v, err := s.Angle.GetValue(); err == nil {
+			return (unit.Angle(v) * unit.Degree).Radians(), nil
+		}
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetRelativeWindDirection retrieves the relative wind direction from the sentence
+func (s MWV) GetRelativeWindDirection() (float64, error) {
+	if s.Status == ValidMWV && s.Reference == ReferenceRelative {
+		if v, err := s.Angle.GetValue(); err == nil {
+			return (unit.Angle(v) * unit.Degree).Radians(), nil
+		}
+	}
+	return 0, fmt.Errorf("value is unavailable")
+}
+
+// GetWindSpeed retrieves wind speed from the sentence
+func (s MWV) GetWindSpeed() (float64, error) {
+	if v, err := s.WindSpeed.GetValue(); err == nil && s.Status == ValidMWV {
+		switch s.WindSpeedUnit {
+		case WindSpeedUnitMPS:
+			return v, nil
+		case WindSpeedUnitKPH:
+			return (unit.Speed(v) * unit.KilometersPerHour).MetersPerSecond(), nil
+		case WindSpeedUnitKnots:
+			return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
+		}
+	}
+	return 0, fmt.Errorf("value is unavailable")
 }
