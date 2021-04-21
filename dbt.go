@@ -9,9 +9,9 @@ const (
 // https://gpsd.gitlab.io/gpsd/NMEA.html#_dbt_depth_below_transducer
 type DBT struct {
 	BaseSentence
-	DepthFeet    float64
-	DepthMeters  float64
-	DepthFathoms float64
+	DepthFeet    Float64
+	DepthMeters  Float64
+	DepthFathoms Float64
 }
 
 // newDBT constructor

@@ -13,9 +13,9 @@ const (
 // http://catb.org/gpsd/AIVDM.html
 type VDMVDO struct {
 	BaseSentence
-	NumFragments   int64
-	FragmentNumber int64
-	MessageID      int64
+	NumFragments   Int64
+	FragmentNumber Int64
+	MessageID      Int64
 	Channel        string
 	Payload        []byte
 }
@@ -29,7 +29,7 @@ func newVDMVDO(s BaseSentence) (VDMVDO, error) {
 		FragmentNumber: p.Int64(1, "fragment number"),
 		MessageID:      p.Int64(2, "sequence number"),
 		Channel:        p.String(3, "channel ID"),
-		Payload:        p.SixBitASCIIArmour(4, int(p.Int64(5, "number of padding bits")), "payload"),
+		Payload:        p.SixBitASCIIArmour(4, int(p.Int64(5, "number of padding bits").Value), "payload"),
 	}
 	return m, p.Err()
 }

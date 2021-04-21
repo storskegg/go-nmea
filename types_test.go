@@ -12,12 +12,12 @@ var nearDistance = 0.001
 func TestParseLatLong(t *testing.T) {
 	var tests = []struct {
 		value    string
-		expected float64
+		expected Float64
 		err      bool
 	}{
-		{"33\u00B0 12' 34.3423\"", 33.209540, false}, // dms
-		{"3345.1232 N", 33.752054, false},            // gps
-		{"151.234532", 151.234532, false},            // decimal
+		{"33\u00B0 12' 34.3423\"", Float64{Valid: true, Value: 33.209540}, false}, // dms
+		{"3345.1232 N", Float64{Valid: true, Value: 33.752054}, false},            // gps
+		{"151.234532", Float64{Valid: true, Value: 151.234532}, false},            // decimal
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -25,7 +25,8 @@ func TestParseLatLong(t *testing.T) {
 			if tt.err {
 				assert.Error(t, err)
 			} else {
-				assert.InDelta(t, tt.expected, l, nearDistance)
+				assert.Equal(t, tt.expected.Valid, l.Valid)
+				assert.InDelta(t, tt.expected.Value, l.Value, nearDistance)
 			}
 		})
 	}
@@ -34,13 +35,13 @@ func TestParseLatLong(t *testing.T) {
 func TestParseGPS(t *testing.T) {
 	var tests = []struct {
 		value    string
-		expected float64
+		expected Float64
 		err      bool
 	}{
-		{"3345.1232 N", 33.752054, false},
-		{"15145.9877 S", -151.76646, false},
-		{"12345.1234 X", 0, true},
-		{"1234.1234", 0, true},
+		{"3345.1232 N", Float64{Valid: true, Value: 33.752054}, false},
+		{"15145.9877 S", Float64{Valid: true, Value: -151.76646}, false},
+		{"12345.1234 X", Float64{Valid: true, Value: 0}, true},
+		{"1234.1234", Float64{Valid: true, Value: 0}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -48,7 +49,8 @@ func TestParseGPS(t *testing.T) {
 			if tt.err {
 				assert.Error(t, err)
 			} else {
-				assert.InDelta(t, tt.expected, l, nearDistance)
+				assert.Equal(t, tt.expected.Valid, l.Valid)
+				assert.InDelta(t, tt.expected.Value, l.Value, nearDistance)
 			}
 		})
 	}
@@ -57,15 +59,15 @@ func TestParseGPS(t *testing.T) {
 func TestParseDMS(t *testing.T) {
 	var tests = []struct {
 		value    string
-		expected float64
+		expected Float64
 		err      bool
 	}{
-		{"33\u00B0 12' 34.3423\"", 33.209540, false},
-		{"33\u00B0 1.1' 34.3423\"", 0, true},
-		{"3.3\u00B0 1' 34.3423\"", 0, true},
-		{"33\u00B0 1' 34.34.23\"", 0, true},
-		{"33 1 3434.23", 0, true},
-		{"123", 0, true},
+		{"33\u00B0 12' 34.3423\"", Float64{Valid: true, Value: 33.209540}, false},
+		{"33\u00B0 1.1' 34.3423\"", Float64{Valid: true, Value: 0}, true},
+		{"3.3\u00B0 1' 34.3423\"", Float64{Valid: true, Value: 0}, true},
+		{"33\u00B0 1' 34.34.23\"", Float64{Valid: true, Value: 0}, true},
+		{"33 1 3434.23", Float64{Valid: true, Value: 0}, true},
+		{"123", Float64{Valid: true, Value: 0}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -73,7 +75,8 @@ func TestParseDMS(t *testing.T) {
 			if tt.err {
 				assert.Error(t, err)
 			} else {
-				assert.InDelta(t, tt.expected, l, nearDistance)
+				assert.Equal(t, tt.expected.Valid, l.Valid)
+				assert.InDelta(t, tt.expected.Value, l.Value, nearDistance)
 			}
 		})
 	}
@@ -82,11 +85,11 @@ func TestParseDMS(t *testing.T) {
 func TestParseDecimal(t *testing.T) {
 	var tests = []struct {
 		value    string
-		expected float64
+		expected Float64
 		err      bool
 	}{
-		{"151.234532", 151.234532, false},
-		{"-151.234532", -151.234532, false},
+		{"151.234532", Float64{Valid: true, Value: 151.234532}, false},
+		{"-151.234532", Float64{Valid: true, Value: -151.234532}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -94,7 +97,8 @@ func TestParseDecimal(t *testing.T) {
 			if tt.err {
 				assert.Error(t, err)
 			} else {
-				assert.InDelta(t, tt.expected, l, nearDistance)
+				assert.Equal(t, tt.expected.Valid, l.Valid)
+				assert.InDelta(t, tt.expected.Value, l.Value, nearDistance)
 			}
 		})
 	}
@@ -102,29 +106,29 @@ func TestParseDecimal(t *testing.T) {
 
 func TestLatLongPrint(t *testing.T) {
 	var tests = []struct {
-		value float64
+		value Float64
 		dms   string
 		gps   string
 	}{
 		{
-			value: 151.434367,
+			value: Float64{Valid: true, Value: 151.434367},
 			gps:   "15126.0620",
 			dms:   "151° 26' 3.721200\"",
 		},
 		{
-			value: 33.94057166666666,
+			value: Float64{Valid: true, Value: 33.94057166666666},
 			gps:   "3356.4343",
 			dms:   "33° 56' 26.058000\"",
 		},
 		{
-			value: 45.0,
+			value: Float64{Valid: true, Value: 45.0},
 			dms:   "45° 0' 0.000000\"",
 			gps:   "4500.0000",
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%f", tt.value), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%f", tt.value.Value), func(t *testing.T) {
 			assert.Equal(t, tt.dms, FormatDMS(tt.value))
 			assert.Equal(t, tt.gps, FormatGPS(tt.value))
 		})

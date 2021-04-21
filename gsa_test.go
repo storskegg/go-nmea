@@ -19,9 +19,9 @@ var gsatests = []struct {
 			Mode:    "A",
 			FixType: "3",
 			SV:      []string{"22", "19", "18", "27", "14", "03"},
-			PDOP:    3.1,
-			HDOP:    2,
-			VDOP:    2.4,
+			PDOP:    Float64{Valid: true, Value: 3.1},
+			HDOP:    Float64{Valid: true, Value: 2},
+			VDOP:    Float64{Valid: true, Value: 2.4},
 		},
 	},
 	{

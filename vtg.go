@@ -9,10 +9,10 @@ const (
 // http://aprs.gids.nl/nmea/#vtg
 type VTG struct {
 	BaseSentence
-	TrueTrack        float64
-	MagneticTrack    float64
-	GroundSpeedKnots float64
-	GroundSpeedKPH   float64
+	TrueTrack        Float64
+	MagneticTrack    Float64
+	GroundSpeedKnots Float64
+	GroundSpeedKPH   Float64
 }
 
 // newVTG parses the VTG sentence into this struct.

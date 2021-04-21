@@ -71,7 +71,7 @@ func parseSentence(raw string) (BaseSentence, error) {
 
 	var (
 		tagBlock TagBlock
-		err			error
+		err      error
 	)
 	if len(tagBlockParts) == 3 {
 		tags := tagBlockParts[1]
@@ -195,8 +195,12 @@ func Parse(raw string) (Sentence, error) {
 			return newGSV(s)
 		case TypeHDT:
 			return newHDT(s)
+		case TypeHEV:
+			return newHEV(s)
 		case TypeGNS:
 			return newGNS(s)
+		case TypeMDA:
+			return newMDA(s)
 		case TypeTHS:
 			return newTHS(s)
 		case TypeWPL:

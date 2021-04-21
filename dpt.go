@@ -9,9 +9,9 @@ const (
 // https://gpsd.gitlab.io/gpsd/NMEA.html#_dpt_depth_of_water
 type DPT struct {
 	BaseSentence
-	Depth      float64
-	Offset     float64
-	RangeScale float64
+	Depth      Float64
+	Offset     Float64
+	RangeScale Float64
 }
 
 // newDPT constructor

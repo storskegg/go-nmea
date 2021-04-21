@@ -17,7 +17,7 @@ var tagblocktests = []struct {
 		name: "Test NMEA tag block",
 		raw:  "s:Satelite_1,c:1553390539*62",
 		msg: TagBlock{
-			Time:   1553390539,
+			Time:   Int64{Valid: true, Value: 1553390539},
 			Source: "Satelite_1",
 		},
 	},
@@ -26,7 +26,7 @@ var tagblocktests = []struct {
 		name: "Test NMEA tag block with head",
 		raw:  "s:satelite,c:1564827317*25",
 		msg: TagBlock{
-			Time:   1564827317,
+			Time:   Int64{Valid: true, Value: 1564827317},
 			Source: "satelite",
 		},
 	},
@@ -35,7 +35,7 @@ var tagblocktests = []struct {
 		name: "Test unknown tag",
 		raw:  "x:NorSat_1,c:1564827317*42",
 		msg: TagBlock{
-			Time:   1564827317,
+			Time:   Int64{Valid: true, Value: 1564827317},
 			Source: "",
 		},
 	},
@@ -43,7 +43,7 @@ var tagblocktests = []struct {
 		name: "Test unix timestamp",
 		raw:  "x:NorSat_1,c:1564827317*42",
 		msg: TagBlock{
-			Time:   1564827317,
+			Time:   Int64{Valid: true, Value: 1564827317},
 			Source: "",
 		},
 	},
@@ -52,7 +52,7 @@ var tagblocktests = []struct {
 		name: "Test milliseconds timestamp",
 		raw:  "x:NorSat_1,c:1564827317000*72",
 		msg: TagBlock{
-			Time:   1564827317000,
+			Time:   Int64{Valid: true, Value: 1564827317000},
 			Source: "",
 		},
 	},
@@ -61,19 +61,19 @@ var tagblocktests = []struct {
 		name: "Test all input types",
 		raw:  "s:satelite,c:1564827317,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*3F",
 		msg: TagBlock{
-			Time:         1564827317,
-			RelativeTime: 1553390539,
+			Time:         Int64{Valid: true, Value: 1564827317},
+			RelativeTime: Int64{Valid: true, Value: 1553390539},
 			Destination:  "ara",
 			Grouping:     "bulk",
 			Source:       "satelite",
 			Text:         "helloworld",
-			LineCount:    13,
+			LineCount:    Int64{Valid: true, Value: 13},
 		},
 	},
 	{
 
 		name: "Test empty tag in tagblock",
-		raw:  "s:satelite,,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*68",
+		raw:  "s:satelite,,r: Int64{Valid:true,Value: 1553390539},d:ara,g:bulk,n: Int64{Valid:true,Value: 13},t:helloworld*68",
 		err:  "nmea: tagblock field is malformed (should be <key>:<value>) []",
 	},
 	{

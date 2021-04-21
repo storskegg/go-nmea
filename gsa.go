@@ -22,9 +22,9 @@ type GSA struct {
 	Mode    string   // The selection mode.
 	FixType string   // The fix type.
 	SV      []string // List of satellite PRNs used for this fix.
-	PDOP    float64  // Dilution of precision.
-	HDOP    float64  // Horizontal dilution of precision.
-	VDOP    float64  // Vertical dilution of precision.
+	PDOP    Float64  // Dilution of precision.
+	HDOP    Float64  // Horizontal dilution of precision.
+	VDOP    Float64  // Vertical dilution of precision.
 }
 
 // newGSA parses the GSA sentence into this struct.

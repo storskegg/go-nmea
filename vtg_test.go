@@ -16,10 +16,10 @@ var vtgtests = []struct {
 		name: "good sentence",
 		raw:  "$GPVTG,45.5,T,67.5,M,30.45,N,56.40,K*4B",
 		msg: VTG{
-			TrueTrack:        45.5,
-			MagneticTrack:    67.5,
-			GroundSpeedKnots: 30.45,
-			GroundSpeedKPH:   56.4,
+			TrueTrack:        Float64{Valid: true, Value: 45.5},
+			MagneticTrack:    Float64{Valid: true, Value: 67.5},
+			GroundSpeedKnots: Float64{Valid: true, Value: 30.45},
+			GroundSpeedKPH:   Float64{Valid: true, Value: 56.4},
 		},
 	},
 	{

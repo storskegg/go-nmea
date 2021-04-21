@@ -16,8 +16,8 @@ var mtktests = []struct {
 		name: "good: Packet Type: 001 PMTK_ACK",
 		raw:  "$PMTK001,604,3*" + Checksum("PMTK001,604,3"),
 		msg: MTK{
-			Cmd:  604,
-			Flag: 3,
+			Cmd:  Int64{Valid: true, Value: 604},
+			Flag: Int64{Valid: true, Value: 3},
 		},
 	},
 	{

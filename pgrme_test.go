@@ -16,9 +16,9 @@ var pgrmetests = []struct {
 		name: "good sentence",
 		raw:  "$PGRME,3.3,M,4.9,M,6.0,M*25",
 		msg: PGRME{
-			Horizontal: 3.3,
-			Vertical:   4.9,
-			Spherical:  6,
+			Horizontal: Float64{Valid: true, Value: 3.3},
+			Vertical:   Float64{Valid: true, Value: 4.9},
+			Spherical:  Float64{Valid: true, Value: 6},
 		},
 	},
 	{

@@ -11,9 +11,9 @@ const (
 // http://aprs.gids.nl/nmea/#rme
 type PGRME struct {
 	BaseSentence
-	Horizontal float64 // Estimated horizontal position error (HPE) in metres
-	Vertical   float64 // Estimated vertical position error (VPE) in metres
-	Spherical  float64 // Overall spherical equivalent position error in meters
+	Horizontal Float64 // Estimated horizontal position error (HPE) in metres
+	Vertical   Float64 // Estimated vertical position error (VPE) in metres
+	Spherical  Float64 // Overall spherical equivalent position error in meters
 }
 
 // newPGRME constructor

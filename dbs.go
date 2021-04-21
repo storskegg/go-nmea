@@ -9,9 +9,9 @@ const (
 // https://gpsd.gitlab.io/gpsd/NMEA.html#_dbs_depth_below_surface
 type DBS struct {
 	BaseSentence
-	DepthFeet    float64
-	DepthMeters  float64
-	DepthFathoms float64
+	DepthFeet    Float64
+	DepthMeters  Float64
+	DepthFathoms Float64
 }
 
 // newDBS constructor

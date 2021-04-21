@@ -15,12 +15,12 @@ type RMC struct {
 	BaseSentence
 	Time      Time    // Time Stamp
 	Validity  string  // validity - A-ok, V-invalid
-	Latitude  float64 // Latitude
-	Longitude float64 // Longitude
-	Speed     float64 // Speed in knots
-	Course    float64 // True course
+	Latitude  Float64 // Latitude
+	Longitude Float64 // Longitude
+	Speed     Float64 // Speed in knots
+	Course    Float64 // True course
 	Date      Date    // Date
-	Variation float64 // Magnetic variation
+	Variation Float64 // Magnetic variation
 }
 
 // newRMC constructor
@@ -38,8 +38,8 @@ func newRMC(s BaseSentence) (RMC, error) {
 		Date:         p.Date(8, "date"),
 		Variation:    p.Float64(9, "variation"),
 	}
-	if p.EnumString(10, "direction", West, East) == West {
-		m.Variation = 0 - m.Variation
+	if m.Variation.Valid && p.EnumString(10, "direction", West, East) == West {
+		m.Variation.Value = 0 - m.Variation.Value
 	}
 	return m, p.Err()
 }

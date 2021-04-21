@@ -23,13 +23,13 @@ const (
 type GGA struct {
 	BaseSentence
 	Time          Time    // Time of fix.
-	Latitude      float64 // Latitude.
-	Longitude     float64 // Longitude.
+	Latitude      Float64 // Latitude.
+	Longitude     Float64 // Longitude.
 	FixQuality    string  // Quality of fix.
-	NumSatellites int64   // Number of satellites in use.
-	HDOP          float64 // Horizontal dilution of precision.
-	Altitude      float64 // Altitude.
-	Separation    float64 // Geoidal separation
+	NumSatellites Int64   // Number of satellites in use.
+	HDOP          Float64 // Horizontal dilution of precision.
+	Altitude      Float64 // Altitude.
+	Separation    Float64 // Geoidal separation
 	DGPSAge       string  // Age of differential GPD data.
 	DGPSId        string  // DGPS reference station ID.
 }

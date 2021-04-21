@@ -19,7 +19,7 @@ const (
 // http://www.nuovamarea.net/pytheas_9.html
 type THS struct {
 	BaseSentence
-	Heading float64 // Heading in degrees
+	Heading Float64 // Heading in degrees
 	Status  string  // Heading status
 }
 

@@ -16,10 +16,10 @@ var vhw = []struct {
 		name: "good sentence",
 		raw:  "$VWVHW,45.0,T,43.0,M,3.5,N,6.4,K*56",
 		msg: VHW{
-			TrueHeading:            45.0,
-			MagneticHeading:        43.0,
-			SpeedThroughWaterKnots: 3.5,
-			SpeedThroughWaterKPH:   6.4,
+			TrueHeading:            Float64{Valid: true, Value: 45.0},
+			MagneticHeading:        Float64{Valid: true, Value: 43.0},
+			SpeedThroughWaterKnots: Float64{Valid: true, Value: 3.5},
+			SpeedThroughWaterKPH:   Float64{Valid: true, Value: 6.4},
 		},
 	},
 	{

@@ -11,7 +11,7 @@ import (
 
 type TestZZZ struct {
 	BaseSentence
-	NumberValue int
+	NumberValue Int64
 	StringValue string
 }
 
@@ -32,7 +32,7 @@ var customparsetests = []struct {
 				Checksum: "13",
 				Raw:      "$AAYYY,20,one,*13",
 			},
-			NumberValue: 20,
+			NumberValue: Int64{Valid: true, Value: 20},
 			StringValue: "one",
 		},
 	},
@@ -47,7 +47,7 @@ var customparsetests = []struct {
 				Checksum: "19",
 				Raw:      "$AAZZZ,30,two,*19",
 			},
-			NumberValue: 30,
+			NumberValue: Int64{Valid: true, Value: 30},
 			StringValue: "two",
 		},
 	},
@@ -68,11 +68,11 @@ var customparsetests = []struct {
 				Raw:      "$GPZDA,172809.456,12,07,1996,00,00*57",
 			},
 			Time:          Time{Valid: true, Hour: 17, Minute: 28, Second: 9, Millisecond: 456},
-			Day:           12,
-			Month:         7,
-			Year:          1996,
-			OffsetHours:   0,
-			OffsetMinutes: 0,
+			Day:           Int64{Valid: true, Value: 12},
+			Month:         Int64{Valid: true, Value: 7},
+			Year:          Int64{Valid: true, Value: 1996},
+			OffsetHours:   Int64{Valid: true, Value: 0},
+			OffsetMinutes: Int64{Valid: true, Value: 0},
 		},
 	},
 }
@@ -93,7 +93,7 @@ func init() {
 		nummericValue, _ := strconv.Atoi(fields[1])
 		return TestZZZ{
 			BaseSentence: s,
-			NumberValue:  nummericValue,
+			NumberValue:  Int64{Valid: true, Value: int64(nummericValue)},
 			StringValue:  fields[2],
 		}, nil
 	})
@@ -102,7 +102,7 @@ func init() {
 		// Somewhat error prone parser
 
 		p := NewParser(s)
-		numberVal := int(p.Int64(0, "number"))
+		numberVal := p.Int64(0, "number")
 		stringVal := p.String(1, "str")
 		return TestZZZ{
 			BaseSentence: s,

@@ -8,8 +8,8 @@ const (
 // WPL contains information about a waypoint location
 type WPL struct {
 	BaseSentence
-	Latitude  float64 // Latitude
-	Longitude float64 // Longitude
+	Latitude  Float64 // Latitude
+	Longitude Float64 // Longitude
 	Ident     string  // Ident of nth waypoint
 }
 

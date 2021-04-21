@@ -10,11 +10,11 @@ const (
 type ZDA struct {
 	BaseSentence
 	Time          Time
-	Day           int64
-	Month         int64
-	Year          int64
-	OffsetHours   int64 // Local time zone offset from GMT, hours
-	OffsetMinutes int64 // Local time zone offset from GMT, minutes
+	Day           Int64
+	Month         Int64
+	Year          Int64
+	OffsetHours   Int64 // Local time zone offset from GMT, hours
+	OffsetMinutes Int64 // Local time zone offset from GMT, minutes
 }
 
 // newZDA constructor

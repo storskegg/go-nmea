@@ -106,36 +106,44 @@ func (p *Parser) EnumChars(i int, context string, options ...string) []string {
 
 // Int64 returns the int64 value at the specified index.
 // If the value is an empty string, 0 is returned.
-func (p *Parser) Int64(i int, context string) int64 {
+func (p *Parser) Int64(i int, context string) Int64 {
 	s := p.String(i, context)
 	if p.err != nil {
-		return 0
+		return Int64{}
 	}
 	if s == "" {
-		return 0
+		return Int64{}
 	}
 	v, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		p.SetErr(context, s)
+		return Int64{}
 	}
-	return v
+	return Int64{
+		Valid: true,
+		Value: v,
+	}
 }
 
 // Float64 returns the float64 value at the specified index.
 // If the value is an empty string, 0 is returned.
-func (p *Parser) Float64(i int, context string) float64 {
+func (p *Parser) Float64(i int, context string) Float64 {
 	s := p.String(i, context)
 	if p.err != nil {
-		return 0
+		return Float64{}
 	}
 	if s == "" {
-		return 0
+		return Float64{}
 	}
 	v, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		p.SetErr(context, s)
+		return Float64{}
 	}
-	return v
+	return Float64{
+		Valid: true,
+		Value: v,
+	}
 }
 
 // Time returns the Time value at the specified index.
@@ -167,24 +175,25 @@ func (p *Parser) Date(i int, context string) Date {
 }
 
 // LatLong returns the coordinate value of the specified fields.
-func (p *Parser) LatLong(i, j int, context string) float64 {
+func (p *Parser) LatLong(i, j int, context string) Float64 {
 	a := p.String(i, context)
 	b := p.String(j, context)
 	if p.err != nil {
-		return 0
+		return Float64{}
 	}
 	s := fmt.Sprintf("%s %s", a, b)
 	v, err := ParseLatLong(s)
 	if err != nil {
 		p.SetErr(context, err.Error())
+		return Float64{}
 	}
 
-	if (b == North || b == South) && (v < -90.0 || 90.0 < v) {
+	if (b == North || b == South) && (v.Value < -90.0 || 90.0 < v.Value) {
 		p.SetErr(context, "latitude is not in range (-90, 90)")
-		return 0
-	} else if (b == West || b == East) && (v < -180.0 || 180.0 < v) {
+		return Float64{}
+	} else if (b == West || b == East) && (v.Value < -180.0 || 180.0 < v.Value) {
 		p.SetErr(context, "longitude is not in range (-180, 180)")
-		return 0
+		return Float64{}
 	}
 
 	return v

@@ -9,7 +9,7 @@ const (
 // http://aprs.gids.nl/nmea/#hdt
 type HDT struct {
 	BaseSentence
-	Heading float64 // Heading in degrees
+	Heading Float64 // Heading in degrees
 	True    bool    // Heading is relative to true north
 }
 

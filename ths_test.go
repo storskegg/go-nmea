@@ -16,7 +16,7 @@ var thstests = []struct {
 		name: "good sentence AutonomousTHS",
 		raw:  "$INTHS,123.456,A*20",
 		msg: THS{
-			Heading: 123.456,
+			Heading: Float64{Valid: true, Value: 123.456},
 			Status:  AutonomousTHS,
 		},
 	},
@@ -24,7 +24,7 @@ var thstests = []struct {
 		name: "good sentence EstimatedTHS",
 		raw:  "$INTHS,123.456,E*24",
 		msg: THS{
-			Heading: 123.456,
+			Heading: Float64{Valid: true, Value: 123.456},
 			Status:  EstimatedTHS,
 		},
 	},
@@ -32,7 +32,7 @@ var thstests = []struct {
 		name: "good sentence ManualTHS",
 		raw:  "$INTHS,123.456,M*2C",
 		msg: THS{
-			Heading: 123.456,
+			Heading: Float64{Valid: true, Value: 123.456},
 			Status:  ManualTHS,
 		},
 	},
@@ -40,7 +40,7 @@ var thstests = []struct {
 		name: "good sentence SimulatorTHS",
 		raw:  "$INTHS,123.456,S*32",
 		msg: THS{
-			Heading: 123.456,
+			Heading: Float64{Valid: true, Value: 123.456},
 			Status:  SimulatorTHS,
 		},
 	},
@@ -48,7 +48,7 @@ var thstests = []struct {
 		name: "good sentence InvalidTHS",
 		raw:  "$INTHS,,V*1E",
 		msg: THS{
-			Heading: 0.0,
+			Heading: Float64{Valid: false, Value: 0.0},
 			Status:  InvalidTHS,
 		},
 	},

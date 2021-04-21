@@ -14,8 +14,8 @@ const (
 // RTE is a route of waypoints
 type RTE struct {
 	BaseSentence
-	NumberOfSentences         int64    // Number of sentences in sequence
-	SentenceNumber            int64    // Sentence number
+	NumberOfSentences         Int64    // Number of sentences in sequence
+	SentenceNumber            Int64    // Sentence number
 	ActiveRouteOrWaypointList string   // Current active route or waypoint list
 	Name                      string   // Name or number of active route
 	Idents                    []string // List of ident of waypoints

@@ -9,18 +9,18 @@ const (
 // http://aprs.gids.nl/nmea/#glgsv
 type GSV struct {
 	BaseSentence
-	TotalMessages   int64     // Total number of messages of this type in this cycle
-	MessageNumber   int64     // Message number
-	NumberSVsInView int64     // Total number of SVs in view
+	TotalMessages   Int64     // Total number of messages of this type in this cycle
+	MessageNumber   Int64     // Message number
+	NumberSVsInView Int64     // Total number of SVs in view
 	Info            []GSVInfo // visible satellite info (0-4 of these)
 }
 
 // GSVInfo represents information about a visible satellite
 type GSVInfo struct {
-	SVPRNNumber int64 // SV PRN number, pseudo-random noise or gold code
-	Elevation   int64 // Elevation in degrees, 90 maximum
-	Azimuth     int64 // Azimuth, degrees from true north, 000 to 359
-	SNR         int64 // SNR, 00-99 dB (null when not tracking)
+	SVPRNNumber Int64 // SV PRN number, pseudo-random noise or gold code
+	Elevation   Int64 // Elevation in degrees, 90 maximum
+	Azimuth     Int64 // Azimuth, degrees from true north, 000 to 359
+	SNR         Int64 // SNR, 00-99 dB (null when not tracking)
 }
 
 // newGSV constructor

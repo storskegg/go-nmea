@@ -16,7 +16,7 @@ var hdttests = []struct {
 		name: "good sentence",
 		raw:  "$GPHDT,123.456,T*32",
 		msg: HDT{
-			Heading: 123.456,
+			Heading: Float64{Valid: true, Value: 123.456},
 			True:    true,
 		},
 	},

@@ -2,7 +2,7 @@ package nmea
 
 // MustParseLatLong parses the supplied string into the LatLong.
 // It panics if an error is encountered
-func MustParseLatLong(s string) float64 {
+func MustParseLatLong(s string) Float64 {
 	l, err := ParseLatLong(s)
 	if err != nil {
 		panic(err)
@@ -11,7 +11,7 @@ func MustParseLatLong(s string) float64 {
 }
 
 // MustParseGPS parses a GPS/NMEA coordinate or panics if it fails.
-func MustParseGPS(s string) float64 {
+func MustParseGPS(s string) Float64 {
 	l, err := ParseGPS(s)
 	if err != nil {
 		panic(err)
@@ -21,7 +21,7 @@ func MustParseGPS(s string) float64 {
 
 // MustParseDMS parses a coordinate in degrees, minutes, seconds and
 // panics on failure
-func MustParseDMS(s string) float64 {
+func MustParseDMS(s string) Float64 {
 	l, err := ParseDMS(s)
 	if err != nil {
 		panic(err)
@@ -30,7 +30,7 @@ func MustParseDMS(s string) float64 {
 }
 
 // ParseDecimal parses a decimal format coordinate and panics on error.
-func MustParseDecimal(s string) float64 {
+func MustParseDecimal(s string) Float64 {
 	l, err := ParseDecimal(s)
 	if err != nil {
 		panic(err)

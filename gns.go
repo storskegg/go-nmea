@@ -27,15 +27,15 @@ const (
 type GNS struct {
 	BaseSentence
 	Time       Time
-	Latitude   float64
-	Longitude  float64
+	Latitude   Float64
+	Longitude  Float64
 	Mode       []string
-	SVs        int64
-	HDOP       float64
-	Altitude   float64
-	Separation float64
-	Age        float64
-	Station    int64
+	SVs        Int64
+	HDOP       Float64
+	Altitude   Float64
+	Separation Float64
+	Age        Float64
+	Station    Int64
 }
 
 // newGNS Constructor

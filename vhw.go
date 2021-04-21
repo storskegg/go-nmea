@@ -8,10 +8,10 @@ const (
 // VHW contains information about water speed and heading
 type VHW struct {
 	BaseSentence
-	TrueHeading            float64
-	MagneticHeading        float64
-	SpeedThroughWaterKnots float64
-	SpeedThroughWaterKPH   float64
+	TrueHeading            Float64
+	MagneticHeading        Float64
+	SpeedThroughWaterKnots Float64
+	SpeedThroughWaterKPH   Float64
 }
 
 // newVHW constructor

@@ -8,8 +8,8 @@ const (
 // MTK is the Time, position, and fix related data of the receiver.
 type MTK struct {
 	BaseSentence
-	Cmd,
-	Flag int64
+	Cmd  Int64
+	Flag Int64
 }
 
 // newMTK constructor
