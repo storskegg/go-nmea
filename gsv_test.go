@@ -1,8 +1,11 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,14 +19,14 @@ var gsvtests = []struct {
 		name: "good sentence",
 		raw:  "$GLGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,12,13,06,292,00*6B",
 		msg: GSV{
-			TotalMessages:   Int64{Valid: true, Value: 3},
-			MessageNumber:   Int64{Valid: true, Value: 1},
-			NumberSVsInView: Int64{Valid: true, Value: 11},
+			TotalMessages:   NewInt64(3),
+			MessageNumber:   NewInt64(1),
+			NumberSVsInView: NewInt64(11),
 			Info: []GSVInfo{
-				{SVPRNNumber: Int64{Valid: true, Value: 3}, Elevation: Int64{Valid: true, Value: 3}, Azimuth: Int64{Valid: true, Value: 111}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 4}, Elevation: Int64{Valid: true, Value: 15}, Azimuth: Int64{Valid: true, Value: 270}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 6}, Elevation: Int64{Valid: true, Value: 1}, Azimuth: Int64{Valid: true, Value: 10}, SNR: Int64{Valid: true, Value: 12}},
-				{SVPRNNumber: Int64{Valid: true, Value: 13}, Elevation: Int64{Valid: true, Value: 6}, Azimuth: Int64{Valid: true, Value: 292}, SNR: Int64{Valid: true, Value: 0}},
+				{SVPRNNumber: NewInt64(3), Elevation: NewInt64(3), Azimuth: NewInt64(111), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(4), Elevation: NewInt64(15), Azimuth: NewInt64(270), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(6), Elevation: NewInt64(1), Azimuth: NewInt64(10), SNR: NewInt64(12)},
+				{SVPRNNumber: NewInt64(13), Elevation: NewInt64(6), Azimuth: NewInt64(292), SNR: NewInt64(0)},
 			},
 		},
 	},
@@ -31,13 +34,13 @@ var gsvtests = []struct {
 		name: "short sentence",
 		raw:  "$GLGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,12*56",
 		msg: GSV{
-			TotalMessages:   Int64{Valid: true, Value: 3},
-			MessageNumber:   Int64{Valid: true, Value: 1},
-			NumberSVsInView: Int64{Valid: true, Value: 11},
+			TotalMessages:   NewInt64(3),
+			MessageNumber:   NewInt64(1),
+			NumberSVsInView: NewInt64(11),
 			Info: []GSVInfo{
-				{SVPRNNumber: Int64{Valid: true, Value: 3}, Elevation: Int64{Valid: true, Value: 3}, Azimuth: Int64{Valid: true, Value: 111}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 4}, Elevation: Int64{Valid: true, Value: 15}, Azimuth: Int64{Valid: true, Value: 270}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 6}, Elevation: Int64{Valid: true, Value: 1}, Azimuth: Int64{Valid: true, Value: 10}, SNR: Int64{Valid: true, Value: 12}},
+				{SVPRNNumber: NewInt64(3), Elevation: NewInt64(3), Azimuth: NewInt64(111), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(4), Elevation: NewInt64(15), Azimuth: NewInt64(270), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(6), Elevation: NewInt64(1), Azimuth: NewInt64(10), SNR: NewInt64(12)},
 			},
 		},
 	},
@@ -80,14 +83,14 @@ var gsvtests = []struct {
 		name: "good sentence",
 		raw:  "$GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,12,13,06,292,00*77",
 		msg: GSV{
-			TotalMessages:   Int64{Valid: true, Value: 3},
-			MessageNumber:   Int64{Valid: true, Value: 1},
-			NumberSVsInView: Int64{Valid: true, Value: 11},
+			TotalMessages:   NewInt64(3),
+			MessageNumber:   NewInt64(1),
+			NumberSVsInView: NewInt64(11),
 			Info: []GSVInfo{
-				{SVPRNNumber: Int64{Valid: true, Value: 3}, Elevation: Int64{Valid: true, Value: 3}, Azimuth: Int64{Valid: true, Value: 111}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 4}, Elevation: Int64{Valid: true, Value: 15}, Azimuth: Int64{Valid: true, Value: 270}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 6}, Elevation: Int64{Valid: true, Value: 1}, Azimuth: Int64{Valid: true, Value: 10}, SNR: Int64{Valid: true, Value: 12}},
-				{SVPRNNumber: Int64{Valid: true, Value: 13}, Elevation: Int64{Valid: true, Value: 6}, Azimuth: Int64{Valid: true, Value: 292}, SNR: Int64{Valid: true, Value: 0}},
+				{SVPRNNumber: NewInt64(3), Elevation: NewInt64(3), Azimuth: NewInt64(111), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(4), Elevation: NewInt64(15), Azimuth: NewInt64(270), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(6), Elevation: NewInt64(1), Azimuth: NewInt64(10), SNR: NewInt64(12)},
+				{SVPRNNumber: NewInt64(13), Elevation: NewInt64(6), Azimuth: NewInt64(292), SNR: NewInt64(0)},
 			},
 		},
 	},
@@ -95,13 +98,13 @@ var gsvtests = []struct {
 		name: "short",
 		raw:  "$GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,12*4A",
 		msg: GSV{
-			TotalMessages:   Int64{Valid: true, Value: 3},
-			MessageNumber:   Int64{Valid: true, Value: 1},
-			NumberSVsInView: Int64{Valid: true, Value: 11},
+			TotalMessages:   NewInt64(3),
+			MessageNumber:   NewInt64(1),
+			NumberSVsInView: NewInt64(11),
 			Info: []GSVInfo{
-				{SVPRNNumber: Int64{Valid: true, Value: 3}, Elevation: Int64{Valid: true, Value: 3}, Azimuth: Int64{Valid: true, Value: 111}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 4}, Elevation: Int64{Valid: true, Value: 15}, Azimuth: Int64{Valid: true, Value: 270}, SNR: Int64{Valid: true, Value: 0}},
-				{SVPRNNumber: Int64{Valid: true, Value: 6}, Elevation: Int64{Valid: true, Value: 1}, Azimuth: Int64{Valid: true, Value: 10}, SNR: Int64{Valid: true, Value: 12}},
+				{SVPRNNumber: NewInt64(3), Elevation: NewInt64(3), Azimuth: NewInt64(111), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(4), Elevation: NewInt64(15), Azimuth: NewInt64(270), SNR: NewInt64(0)},
+				{SVPRNNumber: NewInt64(6), Elevation: NewInt64(1), Azimuth: NewInt64(10), SNR: NewInt64(12)},
 			},
 		},
 	},
@@ -158,3 +161,30 @@ func TestGSV(t *testing.T) {
 		})
 	}
 }
+
+var _ = Describe("GSV", func() {
+	var (
+		parsed GSV
+	)
+	Describe("Getting data from a $__GSV sentence", func() {
+		BeforeEach(func() {
+			parsed = GSV{
+				NumberSVsInView: NewInt64(Satellites),
+			}
+		})
+		Context("When having a parsed sentence", func() {
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+		})
+		Context("When having a parsed sentence without a number of satellites", func() {
+			JustBeforeEach(func() {
+				parsed.NumberSVsInView = Int64{}
+			})
+			Specify("an error is returned", func() {
+				_, err := parsed.GetNumberOfSatellites()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
+})

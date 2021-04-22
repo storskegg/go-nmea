@@ -1,8 +1,11 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,3 +47,61 @@ func TestDBS(t *testing.T) {
 		})
 	}
 }
+
+var _ = Describe("DBS", func() {
+	var (
+		parsed DBS
+	)
+	Describe("Getting data from a $__DBS sentence", func() {
+		BeforeEach(func() {
+			parsed = DBS{
+				DepthFeet:    NewFloat64(DepthBelowSurfaceFeet),
+				DepthMeters:  NewFloat64(DepthBelowSurfaceMeters),
+				DepthFathoms: NewFloat64(DepthBelowSurfaceFathoms),
+			}
+		})
+		Context("When having a parsed sentence", func() {
+			It("should give a valid depth below surface", func() {
+				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+			})
+		})
+		Context("When having a parsed sentence with only depth in feet set", func() {
+			JustBeforeEach(func() {
+				parsed.DepthMeters = Float64{}
+				parsed.DepthFathoms = Float64{}
+			})
+			It("should give a valid depth below surface", func() {
+				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+			})
+		})
+		Context("When having a parsed sentence with only depth in fathoms set", func() {
+			JustBeforeEach(func() {
+				parsed.DepthFeet = Float64{}
+				parsed.DepthMeters = Float64{}
+			})
+			It("should give a valid depth below surface", func() {
+				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+			})
+		})
+		Context("When having a parsed sentence with only depth in meters set", func() {
+			JustBeforeEach(func() {
+				parsed.DepthFeet = Float64{}
+				parsed.DepthFathoms = Float64{}
+			})
+			It("should give a valid depth below surface", func() {
+				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+			})
+		})
+		Context("When having a parsed sentence with missing depth values", func() {
+			JustBeforeEach(func() {
+				parsed.DepthFeet = Float64{}
+				parsed.DepthMeters = Float64{}
+				parsed.DepthFathoms = Float64{}
+			})
+			Specify("an error is returned", func() {
+				_, err := parsed.GetDepthBelowSurface()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+	})
+})

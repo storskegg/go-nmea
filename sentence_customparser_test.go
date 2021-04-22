@@ -1,4 +1,4 @@
-package nmea
+package nmea_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +33,7 @@ var customparsetests = []struct {
 				Checksum: "13",
 				Raw:      "$AAYYY,20,one,*13",
 			},
-			NumberValue: Int64{Valid: true, Value: 20},
+			NumberValue: NewInt64(20),
 			StringValue: "one",
 		},
 	},
@@ -47,7 +48,7 @@ var customparsetests = []struct {
 				Checksum: "19",
 				Raw:      "$AAZZZ,30,two,*19",
 			},
-			NumberValue: Int64{Valid: true, Value: 30},
+			NumberValue: NewInt64(30),
 			StringValue: "two",
 		},
 	},
@@ -68,11 +69,11 @@ var customparsetests = []struct {
 				Raw:      "$GPZDA,172809.456,12,07,1996,00,00*57",
 			},
 			Time:          Time{Valid: true, Hour: 17, Minute: 28, Second: 9, Millisecond: 456},
-			Day:           Int64{Valid: true, Value: 12},
-			Month:         Int64{Valid: true, Value: 7},
-			Year:          Int64{Valid: true, Value: 1996},
-			OffsetHours:   Int64{Valid: true, Value: 0},
-			OffsetMinutes: Int64{Valid: true, Value: 0},
+			Day:           NewInt64(12),
+			Month:         NewInt64(7),
+			Year:          NewInt64(1996),
+			OffsetHours:   NewInt64(0),
+			OffsetMinutes: NewInt64(0),
 		},
 	},
 }

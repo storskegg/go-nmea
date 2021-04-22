@@ -1,8 +1,9 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 

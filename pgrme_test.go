@@ -1,8 +1,9 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,9 +17,9 @@ var pgrmetests = []struct {
 		name: "good sentence",
 		raw:  "$PGRME,3.3,M,4.9,M,6.0,M*25",
 		msg: PGRME{
-			Horizontal: Float64{Valid: true, Value: 3.3},
-			Vertical:   Float64{Valid: true, Value: 4.9},
-			Spherical:  Float64{Valid: true, Value: 6},
+			Horizontal: NewFloat64(3.3),
+			Vertical:   NewFloat64(4.9),
+			Spherical:  NewFloat64(6),
 		},
 	},
 	{

@@ -254,6 +254,13 @@ type Float64 struct {
 	Value float64
 }
 
+func NewFloat64(v float64) Float64 {
+	return Float64{
+		Valid: true,
+		Value: v,
+	}
+}
+
 func (v Float64) GetValue() (float64, error) {
 	if v.Valid {
 		return v.Value, nil
@@ -264,6 +271,13 @@ func (v Float64) GetValue() (float64, error) {
 type Int64 struct {
 	Valid bool
 	Value int64
+}
+
+func NewInt64(v int64) Int64 {
+	return Int64{
+		Valid: true,
+		Value: v,
+	}
 }
 
 func (v Int64) GetValue() (int64, error) {

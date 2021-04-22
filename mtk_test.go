@@ -1,8 +1,9 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,8 +17,8 @@ var mtktests = []struct {
 		name: "good: Packet Type: 001 PMTK_ACK",
 		raw:  "$PMTK001,604,3*" + Checksum("PMTK001,604,3"),
 		msg: MTK{
-			Cmd:  Int64{Valid: true, Value: 604},
-			Flag: Int64{Valid: true, Value: 3},
+			Cmd:  NewInt64(604),
+			Flag: NewInt64(3),
 		},
 	},
 	{

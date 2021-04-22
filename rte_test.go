@@ -1,8 +1,9 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,8 +17,8 @@ var rtetests = []struct {
 		name: "good sentence",
 		raw:  "$IIRTE,4,1,c,Rte 1,411,412,413,414,415*6F",
 		msg: RTE{
-			NumberOfSentences:         Int64{Valid: true, Value: 4},
-			SentenceNumber:            Int64{Valid: true, Value: 1},
+			NumberOfSentences:         NewInt64(4),
+			SentenceNumber:            NewInt64(1),
 			ActiveRouteOrWaypointList: ActiveRoute,
 			Name:                      "Rte 1",
 			Idents:                    []string{"411", "412", "413", "414", "415"},

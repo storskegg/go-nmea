@@ -1,8 +1,11 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,10 +29,10 @@ var ggatests = []struct {
 			Latitude:      MustParseLatLong("6325.6138 N"),
 			Longitude:     MustParseLatLong("01021.4290 E"),
 			FixQuality:    "1",
-			NumSatellites: Int64{Valid: true, Value: 8},
-			HDOP:          Float64{Valid: true, Value: 2.42},
-			Altitude:      Float64{Valid: true, Value: 72.5},
-			Separation:    Float64{Valid: true, Value: 41.5},
+			NumSatellites: NewInt64(8),
+			HDOP:          NewFloat64(2.42),
+			Altitude:      NewFloat64(72.5),
+			Separation:    NewFloat64(41.5),
 			DGPSAge:       "",
 			DGPSId:        "",
 		},
@@ -57,10 +60,10 @@ var ggatests = []struct {
 			Latitude:      MustParseLatLong("3356.4650 S"),
 			Longitude:     MustParseLatLong("15124.5567 E"),
 			FixQuality:    GPS,
-			NumSatellites: Int64{Valid: true, Value: 03},
-			HDOP:          Float64{Valid: true, Value: 9.7},
-			Altitude:      Float64{Valid: true, Value: -25.0},
-			Separation:    Float64{Valid: true, Value: 21.0},
+			NumSatellites: NewInt64(03),
+			HDOP:          NewFloat64(9.7),
+			Altitude:      NewFloat64(-25.0),
+			Separation:    NewFloat64(21.0),
 			DGPSAge:       "",
 			DGPSId:        "0000",
 		},
@@ -98,3 +101,99 @@ func TestGGA(t *testing.T) {
 		})
 	}
 }
+
+var _ = Describe("GGA", func() {
+	var (
+		parsed GGA
+	)
+	Describe("Getting data from a $__GGA sentence", func() {
+		BeforeEach(func() {
+			parsed = GGA{
+				Time:          Time{},
+				Latitude:      NewFloat64(Latitude),
+				Longitude:     NewFloat64(Longitude),
+				FixQuality:    DGPS,
+				NumSatellites: NewInt64(Satellites),
+				HDOP:          Float64{},
+				Altitude:      NewFloat64(Altitude),
+				Separation:    Float64{},
+				DGPSAge:       "",
+				DGPSId:        "",
+			}
+		})
+		Context("When having a parsed sentence", func() {
+			It("should give a valid position", func() {
+				lat, lon, alt, _ := parsed.GetPosition3D()
+				Expect(lat).To(Equal(Latitude))
+				Expect(lon).To(Equal(Longitude))
+				Expect(alt).To(Equal(Altitude))
+			})
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix quality", func() {
+				Expect(parsed.GetFixQuality()).To(Equal(DGPS))
+			})
+		})
+		Context("When having a parsed sentence with a bad fix", func() {
+			JustBeforeEach(func() {
+				parsed.FixQuality = Invalid
+			})
+			Specify("an error is returned", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix quality", func() {
+				Expect(parsed.GetFixQuality()).To(Equal(Invalid))
+			})
+		})
+		Context("When having a parsed sentence with missing longitude", func() {
+			JustBeforeEach(func() {
+				parsed.Longitude = Float64{}
+			})
+			Specify("an error is returned", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix quality", func() {
+				Expect(parsed.GetFixQuality()).To(Equal(DGPS))
+			})
+		})
+		Context("When having a parsed sentence with missing latitude", func() {
+			JustBeforeEach(func() {
+				parsed.Latitude = Float64{}
+			})
+			Specify("an error is returned", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix quality", func() {
+				Expect(parsed.GetFixQuality()).To(Equal(DGPS))
+			})
+		})
+		Context("When having a parsed sentence with missing altitude", func() {
+			JustBeforeEach(func() {
+				parsed.Altitude = Float64{}
+			})
+			Specify("an error is returned", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix quality", func() {
+				Expect(parsed.GetFixQuality()).To(Equal(DGPS))
+			})
+		})
+	})
+})

@@ -1,8 +1,9 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -122,7 +123,7 @@ var parsertests = []struct {
 	{
 		name:     "Int64",
 		fields:   []string{"123"},
-		expected: Int64{Valid: true, Value: 123},
+		expected: NewInt64(123),
 		parse: func(p *Parser) interface{} {
 			return p.Int64(0, "context")
 		},
@@ -130,7 +131,7 @@ var parsertests = []struct {
 	{
 		name:     "Int64 empty field is zero",
 		fields:   []string{""},
-		expected: Int64{Valid: false, Value: 0},
+		expected: Int64{},
 		parse: func(p *Parser) interface{} {
 			return p.Int64(0, "context")
 		},
@@ -138,7 +139,7 @@ var parsertests = []struct {
 	{
 		name:     "Int64 invalid",
 		fields:   []string{"abc"},
-		expected: Int64{Valid: false, Value: 0},
+		expected: Int64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			return p.Int64(0, "context")
@@ -147,7 +148,7 @@ var parsertests = []struct {
 	{
 		name:     "Int64 with existing error",
 		fields:   []string{"123"},
-		expected: Int64{Valid: false, Value: 0},
+		expected: Int64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			p.SetErr("context", "value")
@@ -157,7 +158,7 @@ var parsertests = []struct {
 	{
 		name:     "Float64",
 		fields:   []string{"123.123"},
-		expected: Float64{Valid: true, Value: 123.123},
+		expected: NewFloat64(123.123),
 		parse: func(p *Parser) interface{} {
 			return p.Float64(0, "context")
 		},
@@ -165,7 +166,7 @@ var parsertests = []struct {
 	{
 		name:     "Float64 empty field is zero",
 		fields:   []string{""},
-		expected: Float64{Valid: false, Value: 0},
+		expected: Float64{},
 		parse: func(p *Parser) interface{} {
 			return p.Float64(0, "context")
 		},
@@ -173,7 +174,7 @@ var parsertests = []struct {
 	{
 		name:     "Float64 invalid",
 		fields:   []string{"abc"},
-		expected: Float64{Valid: false, Value: 0},
+		expected: Float64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			return p.Float64(0, "context")
@@ -182,7 +183,7 @@ var parsertests = []struct {
 	{
 		name:     "Float64 with existing error",
 		fields:   []string{"123.123"},
-		expected: Float64{Valid: false, Value: 0},
+		expected: Float64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			p.SetErr("context", "value")
@@ -262,7 +263,7 @@ var parsertests = []struct {
 	{
 		name:     "LatLong",
 		fields:   []string{"5000.0000", "N"},
-		expected: Float64{Valid: true, Value: 50.0},
+		expected: NewFloat64(50.0),
 		parse: func(p *Parser) interface{} {
 			return p.LatLong(0, 1, "context")
 		},
@@ -270,7 +271,7 @@ var parsertests = []struct {
 	{
 		name:     "LatLong - latitude out of range",
 		fields:   []string{"9100.0000", "N"},
-		expected: Float64{Valid: false, Value: 0.0},
+		expected: Float64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			return p.LatLong(0, 1, "context")
@@ -279,7 +280,7 @@ var parsertests = []struct {
 	{
 		name:     "LatLong - longitude out of range",
 		fields:   []string{"18100.0000", "W"},
-		expected: Float64{Valid: false, Value: 0.0},
+		expected: Float64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			return p.LatLong(0, 1, "context")
@@ -288,7 +289,7 @@ var parsertests = []struct {
 	{
 		name:     "LatLong with existing error",
 		fields:   []string{"5000.0000", "W"},
-		expected: Float64{Valid: false, Value: 0.0},
+		expected: Float64{},
 		hasErr:   true,
 		parse: func(p *Parser) interface{} {
 			p.SetErr("context", "value")

@@ -1,8 +1,11 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,12 +23,12 @@ var gnstests = []struct {
 			Latitude:   MustParseGPS("4332.69262 S"),
 			Longitude:  MustParseGPS("17235.48549 E"),
 			Mode:       []string{"R", "R"},
-			SVs:        Int64{Valid: true, Value: 13},
-			HDOP:       Float64{Valid: true, Value: 0.9},
-			Altitude:   Float64{Valid: true, Value: 25.63},
-			Separation: Float64{Valid: true, Value: 11.24},
-			Age:        Float64{Valid: false, Value: 0},
-			Station:    Int64{Valid: false, Value: 0},
+			SVs:        NewInt64(13),
+			HDOP:       NewFloat64(0.9),
+			Altitude:   NewFloat64(25.63),
+			Separation: NewFloat64(11.24),
+			Age:        Float64{},
+			Station:    Int64{},
 		},
 	},
 	{
@@ -36,12 +39,12 @@ var gnstests = []struct {
 			Latitude:   MustParseGPS("4849.931307 N"),
 			Longitude:  MustParseGPS("00216.053323 E"),
 			Mode:       []string{"A", "A"},
-			SVs:        Int64{Valid: true, Value: 14},
-			HDOP:       Float64{Valid: true, Value: 0.6},
-			Altitude:   Float64{Valid: true, Value: 161.5},
-			Separation: Float64{Valid: true, Value: 48.0},
-			Age:        Float64{Valid: false, Value: 0},
-			Station:    Int64{Valid: false, Value: 0},
+			SVs:        NewInt64(14),
+			HDOP:       NewFloat64(0.6),
+			Altitude:   NewFloat64(161.5),
+			Separation: NewFloat64(48.0),
+			Age:        Float64{},
+			Station:    Int64{},
 		},
 	},
 	{
@@ -52,12 +55,12 @@ var gnstests = []struct {
 			Latitude:   MustParseGPS("4849.931307 N"),
 			Longitude:  MustParseGPS("00216.053323 E"),
 			Mode:       []string{"A", "A", "N"},
-			SVs:        Int64{Valid: true, Value: 14},
-			HDOP:       Float64{Valid: true, Value: 0.6},
-			Altitude:   Float64{Valid: true, Value: 161.5},
-			Separation: Float64{Valid: true, Value: 48.0},
-			Age:        Float64{Valid: false, Value: 0},
-			Station:    Int64{Valid: false, Value: 0},
+			SVs:        NewInt64(14),
+			HDOP:       NewFloat64(0.6),
+			Altitude:   NewFloat64(161.5),
+			Separation: NewFloat64(48.0),
+			Age:        Float64{},
+			Station:    Int64{},
 		},
 	},
 	{
@@ -83,3 +86,33 @@ func TestGNS(t *testing.T) {
 		})
 	}
 }
+
+var _ = Describe("GNS", func() {
+	var (
+		parsed GNS
+	)
+	Describe("Getting data from a $__GNS sentence", func() {
+		BeforeEach(func() {
+			parsed = GNS{
+				Time:       Time{},
+				Latitude:   NewFloat64(Latitude),
+				Longitude:  NewFloat64(Longitude),
+				Mode:       []string{SimulatorGNS},
+				SVs:        Int64{},
+				HDOP:       Float64{},
+				Altitude:   NewFloat64(Altitude),
+				Separation: Float64{},
+				Age:        Float64{},
+				Station:    Int64{},
+			}
+		})
+		Context("When having a parsed sentence", func() {
+			It("should give a valid position", func() {
+				lat, lon, alt, _ := parsed.GetPosition3D()
+				Expect(lat).To(Equal(Latitude))
+				Expect(lon).To(Equal(Longitude))
+				Expect(alt).To(Equal(Altitude))
+			})
+		})
+	})
+})

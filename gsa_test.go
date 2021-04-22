@@ -1,8 +1,11 @@
-package nmea
+package nmea_test
 
 import (
 	"testing"
 
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,9 +22,9 @@ var gsatests = []struct {
 			Mode:    "A",
 			FixType: "3",
 			SV:      []string{"22", "19", "18", "27", "14", "03"},
-			PDOP:    Float64{Valid: true, Value: 3.1},
-			HDOP:    Float64{Valid: true, Value: 2},
-			VDOP:    Float64{Valid: true, Value: 2.4},
+			PDOP:    NewFloat64(3.1),
+			HDOP:    NewFloat64(2),
+			VDOP:    NewFloat64(2.4),
 		},
 	},
 	{
@@ -52,3 +55,29 @@ func TestGSA(t *testing.T) {
 		})
 	}
 }
+
+var _ = Describe("GSA", func() {
+	var (
+		parsed GSA
+	)
+	Describe("Getting data from a $__GSA sentence", func() {
+		BeforeEach(func() {
+			parsed = GSA{
+				Mode:    Auto,
+				FixType: Fix3D,
+				SV:      make([]string, Satellites),
+				PDOP:    Float64{},
+				HDOP:    Float64{},
+				VDOP:    Float64{},
+			}
+		})
+		Context("When having a parsed sentence", func() {
+			It("should give a valid number of satellites", func() {
+				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
+			})
+			It("should give a valid fix type", func() {
+				Expect(parsed.GetFixType()).To(Equal(Fix3D))
+			})
+		})
+	})
+})

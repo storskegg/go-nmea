@@ -1,9 +1,10 @@
-package nmea
+package nmea_test
 
 import (
 	"fmt"
 	"testing"
 
+	. "github.com/munnik/go-nmea"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,9 +16,9 @@ func TestParseLatLong(t *testing.T) {
 		expected Float64
 		err      bool
 	}{
-		{"33\u00B0 12' 34.3423\"", Float64{Valid: true, Value: 33.209540}, false}, // dms
-		{"3345.1232 N", Float64{Valid: true, Value: 33.752054}, false},            // gps
-		{"151.234532", Float64{Valid: true, Value: 151.234532}, false},            // decimal
+		{"33\u00B0 12' 34.3423\"", NewFloat64(33.209540), false}, // dms
+		{"3345.1232 N", NewFloat64(33.752054), false},            // gps
+		{"151.234532", NewFloat64(151.234532), false},            // decimal
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -38,10 +39,10 @@ func TestParseGPS(t *testing.T) {
 		expected Float64
 		err      bool
 	}{
-		{"3345.1232 N", Float64{Valid: true, Value: 33.752054}, false},
-		{"15145.9877 S", Float64{Valid: true, Value: -151.76646}, false},
-		{"12345.1234 X", Float64{Valid: true, Value: 0}, true},
-		{"1234.1234", Float64{Valid: true, Value: 0}, true},
+		{"3345.1232 N", NewFloat64(33.752054), false},
+		{"15145.9877 S", NewFloat64(-151.76646), false},
+		{"12345.1234 X", NewFloat64(0), true},
+		{"1234.1234", NewFloat64(0), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -62,12 +63,12 @@ func TestParseDMS(t *testing.T) {
 		expected Float64
 		err      bool
 	}{
-		{"33\u00B0 12' 34.3423\"", Float64{Valid: true, Value: 33.209540}, false},
-		{"33\u00B0 1.1' 34.3423\"", Float64{Valid: true, Value: 0}, true},
-		{"3.3\u00B0 1' 34.3423\"", Float64{Valid: true, Value: 0}, true},
-		{"33\u00B0 1' 34.34.23\"", Float64{Valid: true, Value: 0}, true},
-		{"33 1 3434.23", Float64{Valid: true, Value: 0}, true},
-		{"123", Float64{Valid: true, Value: 0}, true},
+		{"33\u00B0 12' 34.3423\"", NewFloat64(33.209540), false},
+		{"33\u00B0 1.1' 34.3423\"", NewFloat64(0), true},
+		{"3.3\u00B0 1' 34.3423\"", NewFloat64(0), true},
+		{"33\u00B0 1' 34.34.23\"", NewFloat64(0), true},
+		{"33 1 3434.23", NewFloat64(0), true},
+		{"123", NewFloat64(0), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -88,8 +89,8 @@ func TestParseDecimal(t *testing.T) {
 		expected Float64
 		err      bool
 	}{
-		{"151.234532", Float64{Valid: true, Value: 151.234532}, false},
-		{"-151.234532", Float64{Valid: true, Value: -151.234532}, false},
+		{"151.234532", NewFloat64(151.234532), false},
+		{"-151.234532", NewFloat64(-151.234532), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.value, func(t *testing.T) {
@@ -111,17 +112,17 @@ func TestLatLongPrint(t *testing.T) {
 		gps   string
 	}{
 		{
-			value: Float64{Valid: true, Value: 151.434367},
+			value: NewFloat64(151.434367),
 			gps:   "15126.0620",
 			dms:   "151° 26' 3.721200\"",
 		},
 		{
-			value: Float64{Valid: true, Value: 33.94057166666666},
+			value: NewFloat64(33.94057166666666),
 			gps:   "3356.4343",
 			dms:   "33° 56' 26.058000\"",
 		},
 		{
-			value: Float64{Valid: true, Value: 45.0},
+			value: NewFloat64(45.0),
 			dms:   "45° 0' 0.000000\"",
 			gps:   "4500.0000",
 		},

@@ -70,7 +70,7 @@ var sentencetests = []struct {
 			Checksum: "52",
 			Raw:      "!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
 			TagBlock: TagBlock{
-				Time:   Int64{Valid: true, Value: 1553390539},
+				Time:   NewInt64(1553390539),
 				Source: "Satelite_1",
 			},
 		},

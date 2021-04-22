@@ -119,10 +119,7 @@ func (p *Parser) Int64(i int, context string) Int64 {
 		p.SetErr(context, s)
 		return Int64{}
 	}
-	return Int64{
-		Valid: true,
-		Value: v,
-	}
+	return NewInt64(v)
 }
 
 // Float64 returns the float64 value at the specified index.
@@ -140,10 +137,7 @@ func (p *Parser) Float64(i int, context string) Float64 {
 		p.SetErr(context, s)
 		return Float64{}
 	}
-	return Float64{
-		Valid: true,
-		Value: v,
-	}
+	return NewFloat64(v)
 }
 
 // Time returns the Time value at the specified index.
