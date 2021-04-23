@@ -18,7 +18,7 @@ type GLL struct {
 	Latitude  Float64 // Latitude
 	Longitude Float64 // Longitude
 	Time      Time    // Time Stamp
-	Validity  string  // validity - A-valid
+	Validity  String  // validity - A-valid
 }
 
 // newGLL constructor
@@ -36,7 +36,7 @@ func newGLL(s BaseSentence) (GLL, error) {
 
 // GetPosition2D retrieves the 2D position from the sentence
 func (s GLL) GetPosition2D() (float64, float64, error) {
-	if s.Validity == ValidGLL {
+	if s.Validity.Value == ValidGLL {
 		if vLat, err := s.Latitude.GetValue(); err == nil {
 			if vLon, err := s.Longitude.GetValue(); err == nil {
 				return vLat, vLon, nil

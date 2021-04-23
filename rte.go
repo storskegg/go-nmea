@@ -16,9 +16,9 @@ type RTE struct {
 	BaseSentence
 	NumberOfSentences         Int64    // Number of sentences in sequence
 	SentenceNumber            Int64    // Sentence number
-	ActiveRouteOrWaypointList string   // Current active route or waypoint list
-	Name                      string   // Name or number of active route
-	Idents                    []string // List of ident of waypoints
+	ActiveRouteOrWaypointList String   // Current active route or waypoint list
+	Name                      String   // Name or number of active route
+	Idents                    []String // List of ident of waypoints
 }
 
 // newRTE constructor

@@ -39,10 +39,10 @@ const (
 type MWV struct {
 	BaseSentence
 	Angle         Float64
-	Reference     string
+	Reference     String
 	WindSpeed     Float64
-	WindSpeedUnit string
-	Status        string
+	WindSpeedUnit String
+	Status        String
 }
 
 // newMWV constructor
@@ -62,7 +62,7 @@ func newMWV(s BaseSentence) (MWV, error) {
 
 // GetTrueWindDirection retrieves the true wind direction from the sentence
 func (s MWV) GetTrueWindDirection() (float64, error) {
-	if s.Status == ValidMWV && s.Reference == ReferenceTrue {
+	if s.Status.Value == ValidMWV && s.Reference.Value == ReferenceTrue {
 		if v, err := s.Angle.GetValue(); err == nil {
 			return (unit.Angle(v) * unit.Degree).Radians(), nil
 		}
@@ -72,7 +72,7 @@ func (s MWV) GetTrueWindDirection() (float64, error) {
 
 // GetRelativeWindDirection retrieves the relative wind direction from the sentence
 func (s MWV) GetRelativeWindDirection() (float64, error) {
-	if s.Status == ValidMWV && s.Reference == ReferenceRelative {
+	if s.Status.Value == ValidMWV && s.Reference.Value == ReferenceRelative {
 		if v, err := s.Angle.GetValue(); err == nil {
 			return (unit.Angle(v) * unit.Degree).Radians(), nil
 		}
@@ -82,8 +82,8 @@ func (s MWV) GetRelativeWindDirection() (float64, error) {
 
 // GetWindSpeed retrieves wind speed from the sentence
 func (s MWV) GetWindSpeed() (float64, error) {
-	if v, err := s.WindSpeed.GetValue(); err == nil && s.Status == ValidMWV {
-		switch s.WindSpeedUnit {
+	if v, err := s.WindSpeed.GetValue(); err == nil && s.Status.Value == ValidMWV {
+		switch s.WindSpeedUnit.Value {
 		case WindSpeedUnitMPS:
 			return v, nil
 		case WindSpeedUnitKPH:

@@ -2,7 +2,6 @@ package nmea
 
 import (
 	"fmt"
-	"strconv"
 )
 
 // Parser provides a simple way of accessing and parsing
@@ -38,157 +37,114 @@ func (p *Parser) SetErr(context, value string) {
 }
 
 // String returns the field value at the specified index.
-func (p *Parser) String(i int, context string) string {
-	if p.err != nil {
-		return ""
-	}
+func (p *Parser) String(i int, context string) String {
 	if i < 0 || i >= len(p.Fields) {
-		p.SetErr(context, "index out of range")
-		return ""
+		return NewInvalidString("index out of range")
 	}
-	return p.Fields[i]
+	return NewString(p.Fields[i])
 }
 
 // ListString returns a list of all fields from the given start index.
 // An error occurs if there is no fields after the given start index.
-func (p *Parser) ListString(from int, context string) (list []string) {
-	if p.err != nil {
-		return []string{}
+func (p *Parser) ListString(from int, context string) []String {
+	result := make([]String, 0)
+	for i := from; i < len(p.Fields); i++ {
+		result = append(result, p.String(i, context))
 	}
-	if from < 0 || from >= len(p.Fields) {
-		p.SetErr(context, "index out of range")
-		return []string{}
-	}
-	return append(list, p.Fields[from:]...)
+	return result
 }
 
 // EnumString returns the field value at the specified index.
 // An error occurs if the value is not one of the options and not empty.
-func (p *Parser) EnumString(i int, context string, options ...string) string {
+func (p *Parser) EnumString(i int, context string, options ...string) String {
 	s := p.String(i, context)
-	if p.err != nil || s == "" {
-		return ""
+	if !s.Valid {
+		return s
 	}
 	for _, o := range options {
-		if o == s {
+		if o == s.Value {
 			return s
 		}
 	}
-	p.SetErr(context, s)
-	return ""
+	return NewInvalidString("not a valid option")
 }
 
 // EnumChars returns an array of strings that are matched in the Mode field.
 // It will only match the number of characters that are in the Mode field.
 // If the value is empty, it will return an empty array
-func (p *Parser) EnumChars(i int, context string, options ...string) []string {
+func (p *Parser) EnumChars(i int, context string, options ...string) []String {
 	s := p.String(i, context)
-	if p.err != nil || s == "" {
-		return []string{}
+	if !s.Valid {
+		return []String{}
 	}
-	strs := []string{}
-	for _, r := range s {
+	result := make([]String, 0)
+	for _, r := range s.Value {
 		rs := string(r)
 		for _, o := range options {
 			if o == rs {
-				strs = append(strs, o)
+				result = append(result, NewString(o))
 				break
 			}
 		}
 	}
-	if len(strs) != len(s) {
-
-		p.SetErr(context, s)
-		return []string{}
+	if len(result) != len(s.Value) {
+		return []String{}
 	}
-	return strs
+	return result
 }
 
 // Int64 returns the int64 value at the specified index.
 // If the value is an empty string, 0 is returned.
 func (p *Parser) Int64(i int, context string) Int64 {
 	s := p.String(i, context)
-	if p.err != nil {
-		return Int64{}
+	if !s.Valid {
+		return NewInvalidInt64(s.InvalidReason)
 	}
-	if s == "" {
-		return Int64{}
-	}
-	v, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		p.SetErr(context, s)
-		return Int64{}
-	}
-	return NewInt64(v)
+	return ParseInt64(s.Value)
 }
 
 // Float64 returns the float64 value at the specified index.
 // If the value is an empty string, 0 is returned.
 func (p *Parser) Float64(i int, context string) Float64 {
 	s := p.String(i, context)
-	if p.err != nil {
-		return Float64{}
+	if !s.Valid {
+		return NewInvalidFloat64(s.InvalidReason)
 	}
-	if s == "" {
-		return Float64{}
-	}
-	v, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		p.SetErr(context, s)
-		return Float64{}
-	}
-	return NewFloat64(v)
+	return ParseFloat64(s.Value)
 }
 
 // Time returns the Time value at the specified index.
 // If the value is empty, the Time is marked as invalid.
 func (p *Parser) Time(i int, context string) Time {
 	s := p.String(i, context)
-	if p.err != nil {
-		return Time{}
+	if !s.Valid {
+		return NewInvalidTime(s.InvalidReason)
 	}
-	v, err := ParseTime(s)
-	if err != nil {
-		p.SetErr(context, s)
-	}
-	return v
+	return ParseTime(s.Value)
 }
 
 // Date returns the Date value at the specified index.
 // If the value is empty, the Date is marked as invalid.
 func (p *Parser) Date(i int, context string) Date {
 	s := p.String(i, context)
-	if p.err != nil {
-		return Date{}
+	if !s.Valid {
+		return NewInvalidDate(s.InvalidReason)
 	}
-	v, err := ParseDate(s)
-	if err != nil {
-		p.SetErr(context, s)
-	}
-	return v
+	return ParseDate(s.Value)
 }
 
 // LatLong returns the coordinate value of the specified fields.
 func (p *Parser) LatLong(i, j int, context string) Float64 {
 	a := p.String(i, context)
+	if !a.Valid {
+		return NewInvalidFloat64(a.InvalidReason)
+	}
 	b := p.String(j, context)
-	if p.err != nil {
-		return Float64{}
+	if !b.Valid {
+		return NewInvalidFloat64(b.InvalidReason)
 	}
-	s := fmt.Sprintf("%s %s", a, b)
-	v, err := ParseLatLong(s)
-	if err != nil {
-		p.SetErr(context, err.Error())
-		return Float64{}
-	}
-
-	if (b == North || b == South) && (v.Value < -90.0 || 90.0 < v.Value) {
-		p.SetErr(context, "latitude is not in range (-90, 90)")
-		return Float64{}
-	} else if (b == West || b == East) && (v.Value < -180.0 || 180.0 < v.Value) {
-		p.SetErr(context, "longitude is not in range (-180, 180)")
-		return Float64{}
-	}
+	s := fmt.Sprintf("%s %s", a.Value, b.Value)
+	v := ParseLatLong(s)
 
 	return v
 }
@@ -203,7 +159,7 @@ func (p *Parser) SixBitASCIIArmour(i int, fillBits int, context string) []byte {
 		return nil
 	}
 
-	payload := []byte(p.String(i, "encoded payload"))
+	payload := []byte(p.String(i, "encoded payload").Value)
 	numBits := len(payload)*6 - fillBits
 
 	if numBits < 0 {

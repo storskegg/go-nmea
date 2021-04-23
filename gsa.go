@@ -1,5 +1,7 @@
 package nmea
 
+import "fmt"
+
 const (
 	// TypeGSA type for GSA sentences
 	TypeGSA = "GSA"
@@ -19,9 +21,9 @@ const (
 // http://aprs.gids.nl/nmea/#gsa
 type GSA struct {
 	BaseSentence
-	Mode    string   // The selection mode.
-	FixType string   // The fix type.
-	SV      []string // List of satellite PRNs used for this fix.
+	Mode    String   // The selection mode.
+	FixType String   // The fix type.
+	SV      []String // List of satellite PRNs used for this fix.
 	PDOP    Float64  // Dilution of precision.
 	HDOP    Float64  // Horizontal dilution of precision.
 	VDOP    Float64  // Vertical dilution of precision.
@@ -38,7 +40,7 @@ func newGSA(s BaseSentence) (GSA, error) {
 	}
 	// Satellites in view.
 	for i := 2; i < 14; i++ {
-		if v := p.String(i, "satellite in view"); v != "" {
+		if v := p.String(i, "satellite in view"); v.Value != "" {
 			m.SV = append(m.SV, v)
 		}
 	}
@@ -56,5 +58,8 @@ func (s GSA) GetNumberOfSatellites() (int64, error) {
 
 // GetFixType retrieves the fix type from the sentence
 func (s GSA) GetFixType() (string, error) {
-	return s.FixType, nil
+	if v, err := s.FixType.GetValue(); err == nil {
+		return v, nil
+	}
+	return "", fmt.Errorf("value is unavailable")
 }

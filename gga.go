@@ -27,13 +27,13 @@ type GGA struct {
 	Time          Time    // Time of fix.
 	Latitude      Float64 // Latitude.
 	Longitude     Float64 // Longitude.
-	FixQuality    string  // Quality of fix.
+	FixQuality    String  // Quality of fix.
 	NumSatellites Int64   // Number of satellites in use.
 	HDOP          Float64 // Horizontal dilution of precision.
 	Altitude      Float64 // Altitude.
 	Separation    Float64 // Geoidal separation
-	DGPSAge       string  // Age of differential GPD data.
-	DGPSId        string  // DGPS reference station ID.
+	DGPSAge       String  // Age of differential GPD data.
+	DGPSId        String  // DGPS reference station ID.
 }
 
 // newGGA constructor
@@ -65,11 +65,11 @@ func (s GGA) GetNumberOfSatellites() (int64, error) {
 
 // GetPosition3D retrieves the 3D position from the sentence
 func (s GGA) GetPosition3D() (float64, float64, float64, error) {
-	if s.FixQuality == GPS || s.FixQuality == DGPS {
-		if vLat, err := s.Latitude.GetValue(); err == nil {
-			if vLon, err := s.Longitude.GetValue(); err == nil {
-				if vAlt, err := s.Altitude.GetValue(); err == nil {
-					return vLat, vLon, vAlt, nil
+	if s.FixQuality.Value == GPS || s.FixQuality.Value == DGPS {
+		if latitude, err := s.Latitude.GetValue(); err == nil {
+			if longitude, err := s.Longitude.GetValue(); err == nil {
+				if altitude, err := s.Altitude.GetValue(); err == nil {
+					return latitude, longitude, altitude, nil
 				}
 			}
 		}
@@ -79,5 +79,8 @@ func (s GGA) GetPosition3D() (float64, float64, float64, error) {
 
 // GetFixQuality retrieves the fix quality from the sentence
 func (s GGA) GetFixQuality() (string, error) {
-	return s.FixQuality, nil
+	if v, err := s.FixQuality.GetValue(); err == nil {
+		return v, nil
+	}
+	return "", fmt.Errorf("value is unavailable")
 }

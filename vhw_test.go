@@ -1,59 +1,57 @@
 package nmea_test
 
 import (
-	"testing"
-
 	. "github.com/munnik/go-nmea"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/gomega/gstruct"
 )
-
-var vhw = []struct {
-	name string
-	raw  string
-	err  string
-	msg  VHW
-}{
-	{
-		name: "good sentence",
-		raw:  "$VWVHW,45.0,T,43.0,M,3.5,N,6.4,K*56",
-		msg: VHW{
-			TrueHeading:            NewFloat64(45.0),
-			MagneticHeading:        NewFloat64(43.0),
-			SpeedThroughWaterKnots: NewFloat64(3.5),
-			SpeedThroughWaterKPH:   NewFloat64(6.4),
-		},
-	},
-	{
-		name: "bad sentence",
-		raw:  "$VWVHW,T,45.0,43.0,M,3.5,N,6.4,K*56",
-		err:  "nmea: VWVHW invalid true heading: T",
-	},
-}
-
-func TestVHW(t *testing.T) {
-	for _, tt := range vhw {
-		t.Run(tt.name, func(t *testing.T) {
-			m, err := Parse(tt.raw)
-			if tt.err != "" {
-				assert.Error(t, err)
-				assert.EqualError(t, err, tt.err)
-			} else {
-				assert.NoError(t, err)
-				vhw := m.(VHW)
-				vhw.BaseSentence = BaseSentence{}
-				assert.Equal(t, tt.msg, vhw)
-			}
-		})
-	}
-}
 
 var _ = Describe("VHW", func() {
 	var (
-		parsed VHW
+		sentence Sentence
+		parsed   VHW
+		err      error
+		raw      string
 	)
-	Describe("Getting data from a $__VHW sentence", func() {
+	Describe("Parsing", func() {
+		JustBeforeEach(func() {
+			sentence, err = Parse(raw)
+			if sentence != nil {
+				parsed = sentence.(VHW)
+			} else {
+				parsed = VHW{}
+			}
+		})
+		Context("a valid sentence", func() {
+			BeforeEach(func() {
+				raw = "$VWVHW,45.0,T,43.0,M,3.5,N,6.4,K*56"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid VHW struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"TrueHeading":            Equal(NewFloat64(45.0)),
+					"MagneticHeading":        Equal(NewFloat64(43.0)),
+					"SpeedThroughWaterKnots": Equal(NewFloat64(3.5)),
+					"SpeedThroughWaterKPH":   Equal(NewFloat64(6.4)),
+				}))
+			})
+		})
+		Context("a sentence with a bad checksum", func() {
+			BeforeEach(func() {
+				raw = "$VWVHW,45.0,T,43.0,M,3.5,N,6.4,K*7F"
+			})
+			It("returns an error", func() {
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [56 != 7F]"))
+			})
+			It("returns nil", func() {
+				Expect(sentence).To(BeNil())
+			})
+		})
+	})
+	Describe("Getting data from a VHW struct", func() {
 		BeforeEach(func() {
 			parsed = VHW{
 				TrueHeading:            NewFloat64(TrueDirectionDegrees),
@@ -62,87 +60,87 @@ var _ = Describe("VHW", func() {
 				SpeedThroughWaterKnots: NewFloat64(SpeedThroughWaterKnots),
 			}
 		})
-		Context("When having a parsed sentence", func() {
-			It("should give a valid true heading", func() {
+		Context("when having a complete struct", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
-			It("should give a valid magnetic heading", func() {
+			It("returns a valid magnetic heading", func() {
 				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
 			})
-			It("should give a valid speed through water", func() {
+			It("returns a valid speed through water", func() {
 				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing true heading", func() {
+		Context("when having a struct with missing true heading", func() {
 			JustBeforeEach(func() {
-				parsed.TrueHeading = Float64{}
+				parsed.TrueHeading = NewInvalidFloat64("")
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
 				Expect(err).To(HaveOccurred())
 			})
-			It("should give a valid magnetic heading", func() {
+			It("returns a valid magnetic heading", func() {
 				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
 			})
-			It("should give a valid speed through water", func() {
+			It("returns a valid speed through water", func() {
 				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing magnetic track", func() {
+		Context("when having a struct with missing magnetic track", func() {
 			JustBeforeEach(func() {
-				parsed.MagneticHeading = Float64{}
+				parsed.MagneticHeading = NewInvalidFloat64("")
 			})
-			It("should give a valid true heading", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetMagneticHeading()
 				Expect(err).To(HaveOccurred())
 			})
-			It("should give a valid speed through water", func() {
+			It("returns a valid speed through water", func() {
 				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing speed over ground kph", func() {
+		Context("when having a struct with missing speed over ground kph", func() {
 			JustBeforeEach(func() {
-				parsed.SpeedThroughWaterKPH = Float64{}
+				parsed.SpeedThroughWaterKPH = NewInvalidFloat64("")
 			})
-			It("should give a valid true heading", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
-			It("should give a valid magnetic heading", func() {
+			It("returns a valid magnetic heading", func() {
 				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
 			})
-			It("should give a valid speed through water", func() {
+			It("returns a valid speed through water", func() {
 				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing speed over ground knots", func() {
+		Context("when having a struct with missing speed over ground knots", func() {
 			JustBeforeEach(func() {
-				parsed.SpeedThroughWaterKnots = Float64{}
+				parsed.SpeedThroughWaterKnots = NewInvalidFloat64("")
 			})
-			It("should give a valid true heading", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
-			It("should give a valid magnetic heading", func() {
+			It("returns a valid magnetic heading", func() {
 				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
 			})
-			It("should give a valid speed through water", func() {
+			It("returns a valid speed through water", func() {
 				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing speed over ground kph and knots", func() {
+		Context("when having a struct with missing speed over ground kph and knots", func() {
 			JustBeforeEach(func() {
-				parsed.SpeedThroughWaterKPH = Float64{}
-				parsed.SpeedThroughWaterKnots = Float64{}
+				parsed.SpeedThroughWaterKPH = NewInvalidFloat64("")
+				parsed.SpeedThroughWaterKnots = NewInvalidFloat64("")
 			})
-			It("should give a valid true heading", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
-			It("should give a valid magnetic heading", func() {
+			It("returns a valid magnetic heading", func() {
 				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetSpeedThroughWater()
 				Expect(err).To(HaveOccurred())
 			})

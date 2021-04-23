@@ -10,7 +10,7 @@ type WPL struct {
 	BaseSentence
 	Latitude  Float64 // Latitude
 	Longitude Float64 // Longitude
-	Ident     string  // Ident of nth waypoint
+	Ident     String  // Ident of nth waypoint
 }
 
 // newWPL constructor

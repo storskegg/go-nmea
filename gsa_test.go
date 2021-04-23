@@ -1,81 +1,110 @@
 package nmea_test
 
 import (
-	"testing"
-
 	. "github.com/munnik/go-nmea"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/gomega/gstruct"
 )
-
-var gsatests = []struct {
-	name string
-	raw  string
-	err  string
-	msg  GSA
-}{
-	{
-		name: "good sentence",
-		raw:  "$GPGSA,A,3,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*36",
-		msg: GSA{
-			Mode:    "A",
-			FixType: "3",
-			SV:      []string{"22", "19", "18", "27", "14", "03"},
-			PDOP:    NewFloat64(3.1),
-			HDOP:    NewFloat64(2),
-			VDOP:    NewFloat64(2.4),
-		},
-	},
-	{
-		name: "bad mode",
-		raw:  "$GPGSA,F,3,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*31",
-		err:  "nmea: GPGSA invalid selection mode: F",
-	},
-	{
-		name: "bad fix",
-		raw:  "$GPGSA,A,6,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*33",
-		err:  "nmea: GPGSA invalid fix type: 6",
-	},
-}
-
-func TestGSA(t *testing.T) {
-	for _, tt := range gsatests {
-		t.Run(tt.name, func(t *testing.T) {
-			m, err := Parse(tt.raw)
-			if tt.err != "" {
-				assert.Error(t, err)
-				assert.EqualError(t, err, tt.err)
-			} else {
-				assert.NoError(t, err)
-				gsa := m.(GSA)
-				gsa.BaseSentence = BaseSentence{}
-				assert.Equal(t, tt.msg, gsa)
-			}
-		})
-	}
-}
 
 var _ = Describe("GSA", func() {
 	var (
-		parsed GSA
+		sentence Sentence
+		parsed   GSA
+		err      error
+		raw      string
 	)
-	Describe("Getting data from a $__GSA sentence", func() {
-		BeforeEach(func() {
-			parsed = GSA{
-				Mode:    Auto,
-				FixType: Fix3D,
-				SV:      make([]string, Satellites),
-				PDOP:    Float64{},
-				HDOP:    Float64{},
-				VDOP:    Float64{},
+	Describe("Parsing", func() {
+		JustBeforeEach(func() {
+			sentence, err = Parse(raw)
+			if sentence != nil {
+				parsed = sentence.(GSA)
+			} else {
+				parsed = GSA{}
 			}
 		})
-		Context("When having a parsed sentence", func() {
-			It("should give a valid number of satellites", func() {
+		Context("a valid sentence", func() {
+			BeforeEach(func() {
+				raw = "$GPGSA,A,3,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*36"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid GSA struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Mode":    Equal(NewString(Auto)),
+					"FixType": Equal(NewString(Fix3D)),
+					"SV":      Equal([]String{NewString("22"), NewString("19"), NewString("18"), NewString("27"), NewString("14"), NewString("03")}),
+					"PDOP":    Equal(NewFloat64(3.1)),
+					"HDOP":    Equal(NewFloat64(2)),
+					"VDOP":    Equal(NewFloat64(2.4)),
+				}))
+			})
+		})
+		Context("a sentence with a bad mode", func() {
+			BeforeEach(func() {
+				raw = "$GPGSA,F,3,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*31"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid GSA struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Mode":    Equal(NewInvalidString("not a valid option")),
+					"FixType": Equal(NewString(Fix3D)),
+					"SV":      Equal([]String{NewString("22"), NewString("19"), NewString("18"), NewString("27"), NewString("14"), NewString("03")}),
+					"PDOP":    Equal(NewFloat64(3.1)),
+					"HDOP":    Equal(NewFloat64(2)),
+					"VDOP":    Equal(NewFloat64(2.4)),
+				}))
+			})
+		})
+		Context("a sentence with a bad fix", func() {
+			BeforeEach(func() {
+				raw = "$GPGSA,A,6,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*33"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid GSA struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Mode":    Equal(NewString(Auto)),
+					"FixType": Equal(NewInvalidString("not a valid option")),
+					"SV":      Equal([]String{NewString("22"), NewString("19"), NewString("18"), NewString("27"), NewString("14"), NewString("03")}),
+					"PDOP":    Equal(NewFloat64(3.1)),
+					"HDOP":    Equal(NewFloat64(2)),
+					"VDOP":    Equal(NewFloat64(2.4)),
+				}))
+			})
+		})
+		Context("a sentence with a bad checksum", func() {
+			BeforeEach(func() {
+				raw = "$GPGSA,A,3,22,19,18,27,14,03,,,,,,,3.1,2.0,2.4*00"
+			})
+			It("returns an error", func() {
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [36 != 00]"))
+			})
+			It("returns nil", func() {
+				Expect(sentence).To(BeNil())
+			})
+		})
+	})
+	Describe("Getting data from a GSA struct", func() {
+		BeforeEach(func() {
+			parsed = GSA{
+				Mode:    NewString(Auto),
+				FixType: NewString(Fix3D),
+				SV:      make([]String, Satellites),
+				PDOP:    NewInvalidFloat64(""),
+				HDOP:    NewInvalidFloat64(""),
+				VDOP:    NewInvalidFloat64(""),
+			}
+		})
+		Context("when having a complete struct", func() {
+			It("returns a valid number of satellites", func() {
 				Expect(parsed.GetNumberOfSatellites()).To(Equal(Satellites))
 			})
-			It("should give a valid fix type", func() {
+			It("returns a valid fix type", func() {
 				Expect(parsed.GetFixType()).To(Equal(Fix3D))
 			})
 		})

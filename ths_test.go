@@ -1,119 +1,164 @@
 package nmea_test
 
 import (
-	"testing"
-
 	. "github.com/munnik/go-nmea"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/gomega/gstruct"
 )
-
-var thstests = []struct {
-	name string
-	raw  string
-	err  string
-	msg  THS
-}{
-	{
-		name: "good sentence AutonomousTHS",
-		raw:  "$INTHS,123.456,A*20",
-		msg: THS{
-			Heading: NewFloat64(123.456),
-			Status:  AutonomousTHS,
-		},
-	},
-	{
-		name: "good sentence EstimatedTHS",
-		raw:  "$INTHS,123.456,E*24",
-		msg: THS{
-			Heading: NewFloat64(123.456),
-			Status:  EstimatedTHS,
-		},
-	},
-	{
-		name: "good sentence ManualTHS",
-		raw:  "$INTHS,123.456,M*2C",
-		msg: THS{
-			Heading: NewFloat64(123.456),
-			Status:  ManualTHS,
-		},
-	},
-	{
-		name: "good sentence SimulatorTHS",
-		raw:  "$INTHS,123.456,S*32",
-		msg: THS{
-			Heading: NewFloat64(123.456),
-			Status:  SimulatorTHS,
-		},
-	},
-	{
-		name: "good sentence InvalidTHS",
-		raw:  "$INTHS,,V*1E",
-		msg: THS{
-			Heading: Float64{},
-			Status:  InvalidTHS,
-		},
-	},
-	{
-		name: "invalid Status",
-		raw:  "$INTHS,123.456,B*23",
-		err:  "nmea: INTHS invalid status: B",
-	},
-	{
-		name: "invalid Heading",
-		raw:  "$INTHS,XXX,A*51",
-		err:  "nmea: INTHS invalid heading: XXX",
-	},
-}
-
-func TestTHS(t *testing.T) {
-	for _, tt := range thstests {
-		t.Run(tt.name, func(t *testing.T) {
-			m, err := Parse(tt.raw)
-			if tt.err != "" {
-				assert.Error(t, err)
-				assert.EqualError(t, err, tt.err)
-			} else {
-				assert.NoError(t, err)
-				ths := m.(THS)
-				ths.BaseSentence = BaseSentence{}
-				assert.Equal(t, tt.msg, ths)
-			}
-		})
-	}
-}
 
 var _ = Describe("THS", func() {
 	var (
-		parsed THS
+		sentence Sentence
+		parsed   THS
+		err      error
+		raw      string
 	)
-	Describe("Getting data from a $__THS sentence", func() {
+	Describe("Parsing", func() {
+		JustBeforeEach(func() {
+			sentence, err = Parse(raw)
+			if sentence != nil {
+				parsed = sentence.(THS)
+			} else {
+				parsed = THS{}
+			}
+		})
+		Context("a valid sentence with status set to autonomous", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,A*20"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"Status":  Equal(NewString(AutonomousTHS)),
+				}))
+			})
+		})
+		Context("a valid sentence with status set to estimated", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,E*24"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"Status":  Equal(NewString(EstimatedTHS)),
+				}))
+			})
+		})
+		Context("a valid sentence with status set to manual", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,M*2C"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"Status":  Equal(NewString(ManualTHS)),
+				}))
+			})
+		})
+		Context("a valid sentence with status set to simulator", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,S*32"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"Status":  Equal(NewString(SimulatorTHS)),
+				}))
+			})
+		})
+		Context("a valid sentence with status set to invalid", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,,V*1E"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewInvalidFloat64("strconv.ParseFloat: parsing \"\": invalid syntax")),
+					"Status":  Equal(NewString(InvalidTHS)),
+				}))
+			})
+		})
+		Context("a sentence with a non existing status", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,B*23"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"Status":  Equal(NewInvalidString("not a valid option")),
+				}))
+			})
+		})
+		Context("a sentence with an invalid heading", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,XXX,A*51"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid THS struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewInvalidFloat64("strconv.ParseFloat: parsing \"XXX\": invalid syntax")),
+					"Status":  Equal(NewString(AutonomousTHS)),
+				}))
+			})
+		})
+		Context("a sentence with a bad checksum", func() {
+			BeforeEach(func() {
+				raw = "$INTHS,123.456,A*21"
+			})
+			It("returns an error", func() {
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [20 != 21]"))
+			})
+			It("returns nil", func() {
+				Expect(sentence).To(BeNil())
+			})
+		})
+	})
+	Describe("Getting data from a THS struct", func() {
 		BeforeEach(func() {
 			parsed = THS{
 				Heading: NewFloat64(TrueDirectionDegrees),
-				Status:  SimulatorTHS,
+				Status:  NewString(SimulatorTHS),
 			}
 		})
-		Context("When having a parsed sentence", func() {
-			It("should give a valid true heading", func() {
+		Context("when having a complete struct", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing heading", func() {
+		Context("when having a struct with missing heading", func() {
 			JustBeforeEach(func() {
-				parsed.Heading = Float64{}
+				parsed.Heading = NewInvalidFloat64("")
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
 				Expect(err).To(HaveOccurred())
 			})
 		})
-		Context("When having a parsed sentence with status flag set to invalid", func() {
+		Context("when having a struct with status flag set to invalid", func() {
 			JustBeforeEach(func() {
-				parsed.Status = InvalidTHS
+				parsed.Status = NewString(InvalidTHS)
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
 				Expect(err).To(HaveOccurred())
 			})

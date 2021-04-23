@@ -1,87 +1,108 @@
 package nmea_test
 
 import (
-	"testing"
-
 	. "github.com/munnik/go-nmea"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/gomega/gstruct"
 )
-
-var hdttests = []struct {
-	name string
-	raw  string
-	err  string
-	msg  HDT
-}{
-	{
-		name: "good sentence",
-		raw:  "$GPHDT,123.456,T*32",
-		msg: HDT{
-			Heading: NewFloat64(123.456),
-			True:    true,
-		},
-	},
-	{
-		name: "invalid True",
-		raw:  "$GPHDT,123.456,X*3E",
-		err:  "nmea: GPHDT invalid true: X",
-	},
-	{
-		name: "invalid Heading",
-		raw:  "$GPHDT,XXX,T*43",
-		err:  "nmea: GPHDT invalid heading: XXX",
-	},
-}
-
-func TestHDT(t *testing.T) {
-	for _, tt := range hdttests {
-		t.Run(tt.name, func(t *testing.T) {
-			m, err := Parse(tt.raw)
-			if tt.err != "" {
-				assert.Error(t, err)
-				assert.EqualError(t, err, tt.err)
-			} else {
-				assert.NoError(t, err)
-				hdt := m.(HDT)
-				hdt.BaseSentence = BaseSentence{}
-				assert.Equal(t, tt.msg, hdt)
-			}
-		})
-	}
-}
 
 var _ = Describe("HDT", func() {
 	var (
-		parsed HDT
+		sentence Sentence
+		parsed   HDT
+		err      error
+		raw      string
 	)
-	Describe("Getting data from a $__HDT sentence", func() {
+	Describe("Parsing", func() {
+		JustBeforeEach(func() {
+			sentence, err = Parse(raw)
+			if sentence != nil {
+				parsed = sentence.(HDT)
+			} else {
+				parsed = HDT{}
+			}
+		})
+		Context("a valid sentence", func() {
+			BeforeEach(func() {
+				raw = "$GPHDT,123.456,T*32"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid HDT struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"True":    Equal(true),
+				}))
+			})
+		})
+		Context("a sentence with an non existing true", func() {
+			BeforeEach(func() {
+				raw = "$GPHDT,123.456,X*3E"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid HDT struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewFloat64(123.456)),
+					"True":    Equal(false),
+				}))
+			})
+		})
+		Context("a sentence with an invalid heading", func() {
+			BeforeEach(func() {
+				raw = "$GPHDT,XXX,T*43"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid HDT struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Heading": Equal(NewInvalidFloat64("strconv.ParseFloat: parsing \"XXX\": invalid syntax")),
+					"True":    Equal(true),
+				}))
+			})
+		})
+		Context("a sentence with a bad checksum", func() {
+			BeforeEach(func() {
+				raw = "$GPHDT,123.456,T*D7"
+			})
+			It("returns an error", func() {
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [32 != D7]"))
+			})
+			It("returns nil", func() {
+				Expect(sentence).To(BeNil())
+			})
+		})
+	})
+	Describe("Getting data from a HDT struct", func() {
 		BeforeEach(func() {
 			parsed = HDT{
 				Heading: NewFloat64(TrueDirectionDegrees),
 				True:    true,
 			}
 		})
-		Context("When having a parsed sentence", func() {
-			It("should give a valid true heading", func() {
+		Context("when having a complete struct", func() {
+			It("returns a valid true heading", func() {
 				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
 		})
-		Context("When having a parsed sentence with missing heading", func() {
+		Context("when having a struct with missing heading", func() {
 			JustBeforeEach(func() {
-				parsed.Heading = Float64{}
+				parsed.Heading = NewInvalidFloat64("")
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
 				Expect(err).To(HaveOccurred())
 			})
 		})
-		Context("When having a parsed sentence with true flag not set", func() {
+		Context("when having a struct with true flag not set", func() {
 			JustBeforeEach(func() {
 				parsed.True = false
 			})
-			Specify("an error is returned", func() {
+			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
 				Expect(err).To(HaveOccurred())
 			})

@@ -26,7 +26,7 @@ const (
 type THS struct {
 	BaseSentence
 	Heading Float64 // Heading in degrees
-	Status  string  // Heading status
+	Status  String  // Heading status
 }
 
 // newTHS constructor
@@ -43,7 +43,7 @@ func newTHS(s BaseSentence) (THS, error) {
 
 // GetTrueHeading retrieves the true heading from the sentence
 func (s THS) GetTrueHeading() (float64, error) {
-	if v, err := s.Heading.GetValue(); err == nil && s.Status != InvalidTHS {
+	if v, err := s.Heading.GetValue(); err == nil && s.Status.Value != InvalidTHS {
 		return (unit.Angle(v) * unit.Degree).Radians(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")

@@ -31,7 +31,7 @@ type GNS struct {
 	Time       Time
 	Latitude   Float64
 	Longitude  Float64
-	Mode       []string
+	Mode       []String
 	SVs        Int64
 	HDOP       Float64
 	Altitude   Float64
@@ -73,7 +73,7 @@ func (s GNS) GetPosition3D() (float64, float64, float64, error) {
 		SimulatorGNS:         nil,
 	}
 	for _, m := range s.Mode {
-		if _, ok := validModi[m]; ok {
+		if _, ok := validModi[m.Value]; ok && m.Valid {
 			if vLat, err := s.Latitude.GetValue(); err == nil {
 				if vLon, err := s.Longitude.GetValue(); err == nil {
 					if vAlt, err := s.Altitude.GetValue(); err == nil {

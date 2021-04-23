@@ -21,7 +21,7 @@ const (
 type RMC struct {
 	BaseSentence
 	Time      Time    // Time Stamp
-	Validity  string  // validity - A-ok, V-invalid
+	Validity  String  // validity - A-ok, V-invalid
 	Latitude  Float64 // Latitude
 	Longitude Float64 // Longitude
 	Speed     Float64 // Speed in knots
@@ -45,7 +45,7 @@ func newRMC(s BaseSentence) (RMC, error) {
 		Date:         p.Date(8, "date"),
 		Variation:    p.Float64(9, "variation"),
 	}
-	if m.Variation.Valid && p.EnumString(10, "direction", West, East) == West {
+	if m.Variation.Valid && p.EnumString(10, "direction", West, East).Value == West {
 		m.Variation.Value = 0 - m.Variation.Value
 	}
 	return m, p.Err()
@@ -53,7 +53,7 @@ func newRMC(s BaseSentence) (RMC, error) {
 
 // GetMagneticVariation retrieves the magnetic variation from the sentence
 func (s RMC) GetMagneticVariation() (float64, error) {
-	if v, err := s.Variation.GetValue(); err == nil && s.Validity == ValidRMC {
+	if v, err := s.Variation.GetValue(); err == nil && s.Validity.Value == ValidRMC {
 		return (unit.Angle(v) * unit.Degree).Radians(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
@@ -61,7 +61,7 @@ func (s RMC) GetMagneticVariation() (float64, error) {
 
 // GetTrueCourseOverGround retrieves the true course over ground from the sentence
 func (s RMC) GetTrueCourseOverGround() (float64, error) {
-	if v, err := s.Course.GetValue(); err == nil && s.Validity == ValidRMC {
+	if v, err := s.Course.GetValue(); err == nil && s.Validity.Value == ValidRMC {
 		return (unit.Angle(v) * unit.Degree).Radians(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
@@ -69,7 +69,7 @@ func (s RMC) GetTrueCourseOverGround() (float64, error) {
 
 // GetPosition2D retrieves the latitude and longitude from the sentence
 func (s RMC) GetPosition2D() (float64, float64, error) {
-	if s.Validity == ValidRMC {
+	if s.Validity.Value == ValidRMC {
 		if vLat, err := s.Latitude.GetValue(); err == nil {
 			if vLon, err := s.Longitude.GetValue(); err == nil {
 				return vLat, vLon, nil
@@ -81,7 +81,7 @@ func (s RMC) GetPosition2D() (float64, float64, error) {
 
 // GetSpeedOverGround retrieves the speed over ground from the sentence
 func (s RMC) GetSpeedOverGround() (float64, error) {
-	if v, err := s.Speed.GetValue(); err == nil && s.Validity == ValidRMC {
+	if v, err := s.Speed.GetValue(); err == nil && s.Validity.Value == ValidRMC {
 		return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")

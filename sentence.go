@@ -71,15 +71,11 @@ func parseSentence(raw string) (BaseSentence, error) {
 
 	var (
 		tagBlock TagBlock
-		err      error
 	)
 	if len(tagBlockParts) == 3 {
 		tags := tagBlockParts[1]
 		raw = tagBlockParts[2]
-		tagBlock, err = parseTagBlock(tags)
-		if err != nil {
-			return BaseSentence{}, err
-		}
+		tagBlock = parseTagBlock(tags)
 	}
 
 	startIndex := strings.IndexAny(raw, SentenceStart+SentenceStartEncapsulated)

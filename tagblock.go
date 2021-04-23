@@ -2,35 +2,34 @@ package nmea
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
 // TagBlock struct
 type TagBlock struct {
-	Time         Int64  // TypeUnixTime unix timestamp (unit is likely to be s, but might be ms, YMMV), parameter: -c
-	RelativeTime Int64  // TypeRelativeTime relative time, parameter: -r
-	Destination  string // TypeDestinationID destination identification 15 char max, parameter: -d
-	Grouping     string // TypeGrouping sentence grouping, parameter: -g
-	LineCount    Int64  // TypeLineCount line count, parameter: -n
-	Source       string // TypeSourceID source identification 15 char max, parameter: -s
-	Text         string // TypeTextString valid character string, parameter -t
+	Valid         bool
+	InvalidReason string
+	Time          Int64  // TypeUnixTime unix timestamp (unit is likely to be s, but might be ms, YMMV), parameter: -c
+	RelativeTime  Int64  // TypeRelativeTime relative time, parameter: -r
+	Destination   String // TypeDestinationID destination identification 15 char max, parameter: -d
+	Grouping      String // TypeGrouping sentence grouping, parameter: -g
+	LineCount     Int64  // TypeLineCount line count, parameter: -n
+	Source        String // TypeSourceID source identification 15 char max, parameter: -s
+	Text          String // TypeTextString valid character string, parameter -t
 }
 
-func parseInt64(raw string) (Int64, error) {
-	i, err := strconv.ParseInt(raw, 10, 64)
-	if err != nil {
-		return Int64{}, fmt.Errorf("nmea: tagblock unable to parse uint64 [%s]", raw)
+func NewInvalidTagblock(reason string) TagBlock {
+	return TagBlock{
+		InvalidReason: reason,
 	}
-	return Int64{Valid: true, Value: i}, nil
 }
 
 // parseTagBlock adds support for tagblocks
 // https://gpsd.gitlab.io/gpsd/AIVDM.html#_nmea_tag_blocks
-func parseTagBlock(tags string) (TagBlock, error) {
+func parseTagBlock(tags string) TagBlock {
 	sumSepIndex := strings.Index(tags, ChecksumSep)
 	if sumSepIndex == -1 {
-		return TagBlock{}, fmt.Errorf("nmea: tagblock does not contain checksum separator")
+		return NewInvalidTagblock("nmea: tagblock does not contain checksum separator")
 	}
 
 	var (
@@ -38,47 +37,36 @@ func parseTagBlock(tags string) (TagBlock, error) {
 		checksumRaw = strings.ToUpper(tags[sumSepIndex+1:])
 		checksum    = Checksum(fieldsRaw)
 		tagBlock    TagBlock
-		err         error
 	)
 
 	// Validate the checksum
 	if checksum != checksumRaw {
-		return TagBlock{}, fmt.Errorf("nmea: tagblock checksum mismatch [%s != %s]", checksum, checksumRaw)
+		return NewInvalidTagblock(fmt.Sprintf("nmea: tagblock checksum mismatch [%s != %s]", checksum, checksumRaw))
 	}
 
 	items := strings.Split(tags[:sumSepIndex], ",")
 	for _, item := range items {
 		parts := strings.SplitN(item, ":", 2)
 		if len(parts) != 2 {
-			return TagBlock{},
-				fmt.Errorf("nmea: tagblock field is malformed (should be <key>:<value>) [%s]", item)
+			return NewInvalidTagblock(fmt.Sprintf("nmea: tagblock field is malformed (should be <key>:<value>) [%s]", item))
 		}
 		key, value := parts[0], parts[1]
 		switch key {
 		case "c": // UNIX timestamp
-			tagBlock.Time, err = parseInt64(value)
-			if err != nil {
-				return TagBlock{}, err
-			}
+			tagBlock.Time = ParseInt64(value)
 		case "d": // Destination ID
-			tagBlock.Destination = value
+			tagBlock.Destination = NewString(value)
 		case "g": // Grouping
-			tagBlock.Grouping = value
+			tagBlock.Grouping = NewString(value)
 		case "n": // Line count
-			tagBlock.LineCount, err = parseInt64(value)
-			if err != nil {
-				return TagBlock{}, err
-			}
+			tagBlock.LineCount = ParseInt64(value)
 		case "r": // Relative time
-			tagBlock.RelativeTime, err = parseInt64(value)
-			if err != nil {
-				return TagBlock{}, err
-			}
+			tagBlock.RelativeTime = ParseInt64(value)
 		case "s": // Source ID
-			tagBlock.Source = value
+			tagBlock.Source = NewString(value)
 		case "t": // Text string
-			tagBlock.Text = value
+			tagBlock.Text = NewString(value)
 		}
 	}
-	return tagBlock, nil
+	return tagBlock
 }

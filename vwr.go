@@ -26,7 +26,7 @@ const (
 type VWR struct {
 	BaseSentence
 	Angle                        Float64
-	LeftRightOfBow               string
+	LeftRightOfBow               String
 	WindSpeedInKnots             Float64
 	WindSpeedInMetersPerSecond   Float64
 	WindSpeedInKilometersPerHour Float64
@@ -50,7 +50,7 @@ func newVWR(s BaseSentence) (VWR, error) {
 // GetRelativeWindDirection retrieves the true wind direction from the sentence
 func (s VWR) GetRelativeWindDirection() (float64, error) {
 	if v, err := s.Angle.GetValue(); err == nil {
-		if s.LeftRightOfBow == LeftOfBow {
+		if s.LeftRightOfBow.Value == LeftOfBow {
 			return -(unit.Angle(v) * unit.Degree).Radians(), nil
 		}
 		return (unit.Angle(v) * unit.Degree).Radians(), nil

@@ -1,71 +1,83 @@
 package nmea_test
 
 import (
-	"testing"
-
 	. "github.com/munnik/go-nmea"
-	"github.com/stretchr/testify/assert"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 )
 
-var wpltests = []struct {
-	name string
-	raw  string
-	err  string
-	msg  WPL
-}{
-	{
-		name: "good sentence",
-		raw:  "$IIWPL,5503.4530,N,01037.2742,E,411*6F",
-		msg: WPL{
-			Latitude:  MustParseLatLong("5503.4530 N"),
-			Longitude: MustParseLatLong("01037.2742 E"),
-			Ident:     "411",
-		},
-	},
-	{
-		name: "bad latitude",
-		raw:  "$IIWPL,A,N,01037.2742,E,411*01",
-		err:  "nmea: IIWPL invalid latitude: cannot parse [A N], unknown format",
-	},
-	{
-		name: "bad longitude",
-		raw:  "$IIWPL,5503.4530,N,A,E,411*36",
-		err:  "nmea: IIWPL invalid longitude: cannot parse [A E], unknown format",
-	},
-	{
-		name: "good sentence",
-		raw:  "$IIWPL,3356.4650,S,15124.5567,E,411*73",
-		msg: WPL{
-			Latitude:  MustParseLatLong("3356.4650 S"),
-			Longitude: MustParseLatLong("15124.5567 E"),
-			Ident:     "411",
-		},
-	},
-	{
-		name: "bad latitude",
-		raw:  "$IIWPL,A,S,15124.5567,E,411*18",
-		err:  "nmea: IIWPL invalid latitude: cannot parse [A S], unknown format",
-	},
-	{
-		name: "bad longitude",
-		raw:  "$IIWPL,3356.4650,S,A,E,411*2E",
-		err:  "nmea: IIWPL invalid longitude: cannot parse [A E], unknown format",
-	},
-}
-
-func TestWPL(t *testing.T) {
-	for _, tt := range wpltests {
-		t.Run(tt.name, func(t *testing.T) {
-			m, err := Parse(tt.raw)
-			if tt.err != "" {
-				assert.Error(t, err)
-				assert.EqualError(t, err, tt.err)
+var _ = Describe("WPL", func() {
+	var (
+		sentence Sentence
+		parsed   WPL
+		err      error
+		raw      string
+	)
+	Describe("Parsing", func() {
+		JustBeforeEach(func() {
+			sentence, err = Parse(raw)
+			if sentence != nil {
+				parsed = sentence.(WPL)
 			} else {
-				assert.NoError(t, err)
-				wpl := m.(WPL)
-				wpl.BaseSentence = BaseSentence{}
-				assert.Equal(t, tt.msg, wpl)
+				parsed = WPL{}
 			}
 		})
-	}
-}
+		Context("a valid sentence", func() {
+			BeforeEach(func() {
+				raw = "$IIWPL,5503.4530,N,01037.2742,E,411*6F"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid WPL struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Latitude":  Equal(NewFloat64(55.057550000000006)),
+					"Longitude": Equal(NewFloat64(10.621236666666668)),
+					"Ident":     Equal(NewString("411")),
+				}))
+			})
+		})
+		Context("a valid sentence with a bad latitude", func() {
+			BeforeEach(func() {
+				raw = "$IIWPL,A,N,01037.2742,E,411*01"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid WPL struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Latitude":  Equal(NewInvalidFloat64("parse error (not decimal coordinate)")),
+					"Longitude": Equal(NewFloat64(10.621236666666668)),
+					"Ident":     Equal(NewString("411")),
+				}))
+			})
+		})
+		Context("a valid sentence with a bad longitude", func() {
+			BeforeEach(func() {
+				raw = "$IIWPL,5503.4530,N,A,E,411*36"
+			})
+			It("returns no errors", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("equals a valid WPL struct", func() {
+				Expect(parsed).To(MatchFields(IgnoreExtras, Fields{
+					"Latitude":  Equal(NewFloat64(55.057550000000006)),
+					"Longitude": Equal(NewInvalidFloat64("parse error (not decimal coordinate)")),
+					"Ident":     Equal(NewString("411")),
+				}))
+			})
+		})
+		Context("a sentence with a bad checksum", func() {
+			BeforeEach(func() {
+				raw = "$IIWPL,5503.4530,N,01037.2742,E,411*1C"
+			})
+			It("returns an error", func() {
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [6F != 1C]"))
+			})
+			It("returns nil", func() {
+				Expect(sentence).To(BeNil())
+			})
+		})
+	})
+})

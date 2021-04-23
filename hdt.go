@@ -26,7 +26,7 @@ func newHDT(s BaseSentence) (HDT, error) {
 	m := HDT{
 		BaseSentence: s,
 		Heading:      p.Float64(0, "heading"),
-		True:         p.EnumString(1, "true", "T") == "T",
+		True:         p.EnumString(1, "true", "T").Value == "T",
 	}
 	return m, p.Err()
 }

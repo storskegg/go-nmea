@@ -154,7 +154,7 @@ type VDMVDO struct {
 	NumFragments   Int64
 	FragmentNumber Int64
 	MessageID      Int64
-	Channel        string
+	Channel        String
 	Payload        []byte
 	ais.Packet
 }
@@ -180,7 +180,10 @@ func newVDMVDO(s BaseSentence) (VDMVDO, error) {
 		Payload:        p.SixBitASCIIArmour(4, int(p.Int64(5, "number of padding bits").Value), "payload"),
 	}
 	result, err := nmeaCodec.ParseSentence(s.String())
-	if err == nil && result != nil {
+	if err != nil {
+		return m, err
+	}
+	if result != nil {
 		m.Packet = result.Packet
 	}
 	return m, p.Err()
