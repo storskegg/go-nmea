@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/BertoldVdb/go-ais"
 	"github.com/BertoldVdb/go-ais/aisnmea"
@@ -64,7 +65,7 @@ var vesselTypes []string = []string{
 	"Reserved for future use",
 	"Reserved for future use",
 	"Reserved for future use",
-	"Wing in ground (WIG), all ships of this type",
+	"Wing in ground (WIG), All ships of this type",
 	"Wing in ground (WIG), Hazardous category A",
 	"Wing in ground (WIG), Hazardous category B",
 	"Wing in ground (WIG), Hazardous category C",
@@ -84,7 +85,7 @@ var vesselTypes []string = []string{
 	"Pleasure Craft",
 	"Reserved",
 	"Reserved",
-	"High speed craft (HSC), all ships of this type",
+	"High speed craft (HSC), All ships of this type",
 	"High speed craft (HSC), Hazardous category A",
 	"High speed craft (HSC), Hazardous category B",
 	"High speed craft (HSC), Hazardous category C",
@@ -104,7 +105,7 @@ var vesselTypes []string = []string{
 	"Spare - Local Vessel",
 	"Medical Transport",
 	"Noncombatant ship according to RR Resolution No. 18",
-	"Passenger, all ships of this type",
+	"Passenger, All ships of this type",
 	"Passenger, Hazardous category A",
 	"Passenger, Hazardous category B",
 	"Passenger, Hazardous category C",
@@ -114,7 +115,7 @@ var vesselTypes []string = []string{
 	"Passenger, Reserved for future use",
 	"Passenger, Reserved for future use",
 	"Passenger, No additional information",
-	"Cargo, all ships of this type",
+	"Cargo, All ships of this type",
 	"Cargo, Hazardous category A",
 	"Cargo, Hazardous category B",
 	"Cargo, Hazardous category C",
@@ -124,7 +125,7 @@ var vesselTypes []string = []string{
 	"Cargo, Reserved for future use",
 	"Cargo, Reserved for future use",
 	"Cargo, No additional information",
-	"Tanker, all ships of this type",
+	"Tanker, All ships of this type",
 	"Tanker, Hazardous category A",
 	"Tanker, Hazardous category B",
 	"Tanker, Hazardous category C",
@@ -134,7 +135,7 @@ var vesselTypes []string = []string{
 	"Tanker, Reserved for future use",
 	"Tanker, Reserved for future use",
 	"Tanker, No additional information",
-	"Other Type, all ships of this type",
+	"Other Type, All ships of this type",
 	"Other Type, Hazardous category A",
 	"Other Type, Hazardous category B",
 	"Other Type, Hazardous category C",
@@ -143,12 +144,12 @@ var vesselTypes []string = []string{
 	"Other Type, Reserved for future use",
 	"Other Type, Reserved for future use",
 	"Other Type, Reserved for future use",
-	"Other Type, no additional information",
+	"Other Type, No additional information",
 }
 
 // VDMVDO is a format used to encapsulate generic binary payloads. It is most commonly used
 // with AIS data.
-// http://catb.org/gpsd/AIVDM.html
+// https://gpsd.gitlab.io/gpsd/AIVDM.html
 type VDMVDO struct {
 	BaseSentence
 	NumFragments   Int64
@@ -275,6 +276,9 @@ func (s VDMVDO) GetVesselBeam() (float64, error) {
 		}
 		return (unit.Length(beam) * unit.Decimeter).Meters(), nil
 	}
+	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
+		return float64(shipStaticData.Dimension.C + shipStaticData.Dimension.D), nil
+	}
 	return 0, fmt.Errorf("value is unavailable")
 }
 
@@ -286,6 +290,9 @@ func (s VDMVDO) GetVesselLength() (float64, error) {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Length(length) * unit.Decimeter).Meters(), nil
+	}
+	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
+		return float64(shipStaticData.Dimension.A + shipStaticData.Dimension.B), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -309,7 +316,7 @@ func (s VDMVDO) GetVesselType() (string, error) {
 	} else if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		vesselTypeIndex = int(shipStaticData.Type)
 	}
-	if vesselTypeIndex < len(vesselTypes) {
+	if vesselTypeIndex >= 0 && vesselTypeIndex < len(vesselTypes) {
 		return vesselTypes[vesselTypeIndex], nil
 	}
 	return "", fmt.Errorf("value is unavailable")
@@ -322,20 +329,20 @@ func (s VDMVDO) GetRateOfTurn() (float64, error) {
 		if positionReport.RateOfTurn == rateOfTurnNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
+		if positionReport.RateOfTurn == 0 {
+			return 0, nil
+		}
 		if positionReport.RateOfTurn == rateOfTurnMaxLeftDegreesPerMinute {
 			return rateOfTurnMaxLeftRadiansPerSecond, nil
 		}
 		if positionReport.RateOfTurn == rateOfTurnMaxRightDegreesPerMinute {
 			return rateOfTurnMaxRightRadiansPerSecond, nil
 		}
-		if positionReport.RateOfTurn == 0 {
-			return 0, nil
-		}
 		aisDecodedROT := math.Pow(float64(positionReport.RateOfTurn)/4.733, 2)
 		if positionReport.RateOfTurn < 0 {
 			aisDecodedROT = -aisDecodedROT
 		}
-		return -(unit.Angle(aisDecodedROT) * unit.Degree).Radians() / float64(unit.Minute), nil
+		return (unit.Angle(aisDecodedROT) * unit.Degree).Radians() / float64(unit.Minute), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -376,4 +383,33 @@ func (s VDMVDO) GetSpeedOverGround() (float64, error) {
 		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
+}
+
+func (s VDMVDO) GetDestination() (string, error) {
+	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
+		return shipStaticData.Destination, nil
+	}
+	return "", fmt.Errorf("value is unavailable")
+}
+
+func (s VDMVDO) GetETA() (time.Time, error) {
+	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
+		result := time.Date(
+			time.Now().UTC().Year(),
+			time.Month(shipStaticData.Eta.Month),
+			int(shipStaticData.Eta.Day),
+			int(shipStaticData.Eta.Hour),
+			int(shipStaticData.Eta.Minute),
+			0,
+			0,
+			time.UTC,
+		)
+		// The year of the ETA is a guess, if the result is more than a half year ago assume the result should be in the future
+		if result.Before(time.Now().UTC().AddDate(0, -6, 0)) {
+			result = result.AddDate(1, 0, 0)
+		}
+		return result, nil
+	}
+	return time.Unix(0, 0), fmt.Errorf("value is unavailable")
+
 }

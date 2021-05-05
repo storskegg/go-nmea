@@ -53,7 +53,9 @@ func (s VWR) GetRelativeWindDirection() (float64, error) {
 		if s.LeftRightOfBow.Value == LeftOfBow {
 			return -(unit.Angle(v) * unit.Degree).Radians(), nil
 		}
-		return (unit.Angle(v) * unit.Degree).Radians(), nil
+		if s.LeftRightOfBow.Value == RightOfBow {
+			return (unit.Angle(v) * unit.Degree).Radians(), nil
+		}
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }

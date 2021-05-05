@@ -46,12 +46,15 @@ func (p *Parser) String(i int, context string) String {
 
 // ListString returns a list of all fields from the given start index.
 // An error occurs if there is no fields after the given start index.
-func (p *Parser) ListString(from int, context string) []String {
+func (p *Parser) ListString(from int, context string) StringList {
+	if from < 0 || from >= len(p.Fields) {
+		return NewInvalidStringList("index out of range")
+	}
 	result := make([]String, 0)
 	for i := from; i < len(p.Fields); i++ {
 		result = append(result, p.String(i, context))
 	}
-	return result
+	return NewStringList(result)
 }
 
 // EnumString returns the field value at the specified index.
@@ -72,25 +75,27 @@ func (p *Parser) EnumString(i int, context string, options ...string) String {
 // EnumChars returns an array of strings that are matched in the Mode field.
 // It will only match the number of characters that are in the Mode field.
 // If the value is empty, it will return an empty array
-func (p *Parser) EnumChars(i int, context string, options ...string) []String {
+func (p *Parser) EnumChars(i int, context string, options ...string) StringList {
 	s := p.String(i, context)
 	if !s.Valid {
-		return []String{}
+		return NewInvalidStringList(s.InvalidReason)
 	}
 	result := make([]String, 0)
 	for _, r := range s.Value {
 		rs := string(r)
+		found := false
 		for _, o := range options {
 			if o == rs {
 				result = append(result, NewString(o))
+				found = true
 				break
 			}
 		}
+		if !found {
+			result = append(result, NewInvalidString("not a valid option"))
+		}
 	}
-	if len(result) != len(s.Value) {
-		return []String{}
-	}
-	return result
+	return NewStringList(result)
 }
 
 // Int64 returns the int64 value at the specified index.

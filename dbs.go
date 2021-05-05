@@ -37,9 +37,6 @@ func (s DBS) GetDepthBelowSurface() (float64, error) {
 	if v, err := s.DepthMeters.GetValue(); err == nil {
 		return v, nil
 	}
-	if v, err := s.DepthMeters.GetValue(); err == nil {
-		return (unit.Length(v) * unit.Foot).Meters(), nil
-	}
 	if v, err := s.DepthFeet.GetValue(); err == nil {
 		return (unit.Length(v) * unit.Foot).Meters(), nil
 	}

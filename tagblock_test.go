@@ -1,4 +1,4 @@
-package nmea
+package nmea_test
 
 // import (
 // 	"testing"

@@ -71,25 +71,7 @@ var _ = Describe("ZDA", func() {
 			})
 		})
 	})
-	Describe("Parse an actual sentence", func() {
-		BeforeEach(func() {
-			sentence := "$GPZDA,185257,17,04,2021,00,00*47"
-			parseResult, err := Parse(sentence)
-			if err != nil {
-				Fail("Could not parse sentence")
-			}
-			var ok bool
-			if parsed, ok = parseResult.(ZDA); !ok {
-				Fail("Could not cast to ZDA")
-			}
-		})
-		Context("when having a complete struct", func() {
-			It("returns a valid date and time", func() {
-				Expect(parsed.GetDateTime()).To(Equal("2021-04-17T18:52:57Z"))
-			})
-		})
-	})
-	Describe("Getting directions from a $__ZDA sentence", func() {
+	Describe("Getting data from a $__ZDA sentence", func() {
 		BeforeEach(func() {
 			parsed = ZDA{
 				Time: Time{
@@ -107,6 +89,42 @@ var _ = Describe("ZDA", func() {
 		Context("when having a complete struct", func() {
 			It("returns a valid date and time", func() {
 				Expect(parsed.GetDateTime()).To(Equal("2021-04-16T20:05:45.315Z"))
+			})
+		})
+		Context("when missing time", func() {
+			JustBeforeEach(func() {
+				parsed.Time = NewInvalidTime("")
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDateTime()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when missing year", func() {
+			JustBeforeEach(func() {
+				parsed.Year = NewInvalidInt64("")
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDateTime()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when missing month", func() {
+			JustBeforeEach(func() {
+				parsed.Month = NewInvalidInt64("")
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDateTime()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when missing day", func() {
+			JustBeforeEach(func() {
+				parsed.Day = NewInvalidInt64("")
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDateTime()
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

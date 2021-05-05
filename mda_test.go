@@ -114,21 +114,17 @@ var _ = Describe("MDA", func() {
 				Expect(parsed.GetOutsidePressure()).To(Float64Equal(PressurePascal, 0.5))
 			})
 		})
+		Context("when having a struct with wind speed in meters per second missing", func() {
+			JustBeforeEach(func() {
+				parsed.WindSpeedInMetersPerSecond = NewInvalidFloat64("")
+			})
+			It("returns a valid outside pressure", func() {
+				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+			})
+		})
 		Context("when having a struct with missing data", func() {
 			JustBeforeEach(func() {
 				parsed = MDA{}
-			})
-			It("returns an error", func() {
-				_, err := parsed.GetDewPointTemperature()
-				Expect(err).To(HaveOccurred())
-			})
-			It("returns an error", func() {
-				_, err := parsed.GetHumidity()
-				Expect(err).To(HaveOccurred())
-			})
-			It("returns an error", func() {
-				_, err := parsed.GetMagneticWindDirection()
-				Expect(err).To(HaveOccurred())
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetOutsidePressure()
@@ -139,7 +135,23 @@ var _ = Describe("MDA", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns an error", func() {
+				_, err := parsed.GetWaterTemperature()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetHumidity()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDewPointTemperature()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
 				_, err := parsed.GetTrueWindDirection()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetMagneticWindDirection()
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns an error", func() {

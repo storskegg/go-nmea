@@ -1,226 +1,174 @@
-package nmea
+package nmea_test
 
-// import (
-// 	"testing"
+import (
+	"errors"
 
-// 	"github.com/stretchr/testify/assert"
-// )
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-// var sentencetests = []struct {
-// 	name     string
-// 	raw      string
-// 	datatype string
-// 	talkerid string
-// 	prefix   string
-// 	err      string
-// 	sent     BaseSentence
-// }{
-// 	{
-// 		name:     "checksum ok",
-// 		raw:      "$GPFOO,1,2,3.3,x,y,zz,*51",
-// 		datatype: "FOO",
-// 		talkerid: "GP",
-// 		prefix:   "GPFOO",
-// 		sent: BaseSentence{
-// 			Talker:   "GP",
-// 			Type:     "FOO",
-// 			Fields:   []string{"1", "2", "3.3", "x", "y", "zz", ""},
-// 			Checksum: "51",
-// 			Raw:      "$GPFOO,1,2,3.3,x,y,zz,*51",
-// 		},
-// 	},
-// 	{
-// 		name:     "trim leading and trailing spaces",
-// 		raw:      "   $GPFOO,1,2,3.3,x,y,zz,*51   ",
-// 		datatype: "FOO",
-// 		talkerid: "GP",
-// 		prefix:   "GPFOO",
-// 		sent: BaseSentence{
-// 			Talker:   "GP",
-// 			Type:     "FOO",
-// 			Fields:   []string{"1", "2", "3.3", "x", "y", "zz", ""},
-// 			Checksum: "51",
-// 			Raw:      "$GPFOO,1,2,3.3,x,y,zz,*51",
-// 		},
-// 	},
-// 	{
-// 		name:     "good parsing",
-// 		raw:      "$GPRMC,235236,A,3925.9479,N,11945.9211,W,44.7,153.6,250905,15.2,E,A*0C",
-// 		datatype: "RMC",
-// 		talkerid: "GP",
-// 		prefix:   "GPRMC",
-// 		sent: BaseSentence{
-// 			Talker:   "GP",
-// 			Type:     "RMC",
-// 			Fields:   []string{"235236", "A", "3925.9479", "N", "11945.9211", "W", "44.7", "153.6", "250905", "15.2", "E", "A"},
-// 			Checksum: "0C",
-// 			Raw:      "$GPRMC,235236,A,3925.9479,N,11945.9211,W,44.7,153.6,250905,15.2,E,A*0C",
-// 		},
-// 	},
-// 	{
-// 		name:     "valid NMEA 4.10 TAG Block",
-// 		raw:      "\\s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
-// 		datatype: "VDM",
-// 		talkerid: "AI",
-// 		prefix:   "AIVDM",
-// 		sent: BaseSentence{
-// 			Talker:   "AI",
-// 			Type:     "VDM",
-// 			Fields:   []string{"1", "1", "", "A", "13M@ah0025QdPDTCOl`K6`nV00Sv", "0"},
-// 			Checksum: "52",
-// 			Raw:      "!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
-// 			TagBlock: TagBlock{
-// 				Time:   NewInt64(1553390539),
-// 				Source: "Satelite_1",
-// 			},
-// 		},
-// 	},
-// 	{
-// 		name: "checksum bad",
-// 		raw:  "$GPFOO,1,2,3.4,x,y,zz,*51",
-// 		err:  "nmea: sentence checksum mismatch [56 != 51]",
-// 	},
-// 	{
-// 		name: "bad start character",
-// 		raw:  "%GPFOO,1,2,3,x,y,z*1A",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "bad checksum delimiter",
-// 		raw:  "$GPFOO,1,2,3,x,y,z",
-// 		err:  "nmea: sentence does not contain checksum separator",
-// 	},
-// 	{
-// 		name: "no start delimiter",
-// 		raw:  "abc$GPRMC,235236,A,3925.9479,N,11945.9211,W,44.7,153.6,250905,15.2,E,A*0C",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "no contain delimiter",
-// 		raw:  "GPRMC,235236,A,3925.9479,N,11945.9211,W,44.7,153.6,250905,15.2,E,A*0C",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "another bad checksum",
-// 		raw:  "$GPRMC,235236,A,3925.9479,N,11945.9211,W,44.7,153.6,250905,15.2,E,A*0A",
-// 		err:  "nmea: sentence checksum mismatch [0C != 0A]",
-// 	},
-// 	{
-// 		name: "missing TAG Block start delimiter",
-// 		raw:  "s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "missing TAG Block end delimiter",
-// 		raw:  "\\s:Satelite_1,c:1553390539*62!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "invalid TAG Block contents",
-// 		raw:  "\\\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52",
-// 		err:  "nmea: tagblock does not contain checksum separator",
-// 	},
-// }
+var _ = Describe("Sentence", func() {
+	Describe("Testing methods of BaseSentence", func() {
+		var (
+			bs BaseSentence
+		)
+		BeforeEach(func() {
+			bs = BaseSentence{
+				Talker:   "GN",
+				Type:     "RMC",
+				Fields:   []string{"001225", "A", "2832.1834", "N", "08101.0536", "W", "12", "25", "251211", "1.2", "E", "A"},
+				Checksum: "03",
+				Raw:      "$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03",
+				TagBlock: TagBlock{},
+			}
+		})
+		Context("when getting the prefix", func() {
+			It("returns a valid value", func() {
+				Expect(bs.Prefix()).To(Equal("GNRMC"))
+			})
+		})
+		Context("when getting the datatype", func() {
+			It("returns a valid value", func() {
+				Expect(bs.DataType()).To(Equal("RMC"))
+			})
+		})
+		Context("when getting the talker id", func() {
+			It("returns a valid value", func() {
+				Expect(bs.TalkerID()).To(Equal("GN"))
+			})
+		})
+		Context("when getting the string representation", func() {
+			It("returns a valid value", func() {
+				Expect(bs.String()).To(Equal("$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03"))
+			})
+		})
+	})
+	Describe("Testing the (Must)RegisterParser function", func() {
+		cp := func(BaseSentence) (Sentence, error) {
+			return nil, nil
+		}
+		Context("when a custom parser has not been registered yet", func() {
+			It("returns no error", func() {
+				Expect(RegisterParser("CPA", cp)).ToNot(HaveOccurred())
+			})
+		})
+		Context("when a custom parser is registered twice", func() {
+			It("returns an error", func() {
+				Expect(RegisterParser("CPB", cp)).ToNot(HaveOccurred())
+				Expect(RegisterParser("CPB", cp)).To(MatchError("nmea: parser for sentence type '\"CPB\"' already exists"))
+			})
+		})
+		Context("when a custom parser has not been registered yet", func() {
+			It("returns no error", func() {
+				Expect(func() { MustRegisterParser("CPC", cp) }).ToNot(Panic())
+			})
+		})
+		Context("when a custom parser is registered twice", func() {
+			It("returns an error", func() {
+				Expect(func() { MustRegisterParser("CPD", cp) }).ToNot(Panic())
+				Expect(func() { MustRegisterParser("CPD", cp) }).To(PanicWith(errors.New("nmea: parser for sentence type '\"CPD\"' already exists")))
+			})
+		})
+		Context("when registering and using a custom parser", func() {
+			It("parses the custom sentence", func() {
+				type XYZType struct {
+					BaseSentence
+					Time    Time
+					Counter Int64
+					Label   String
+					Value   Float64
+				}
+				err := RegisterParser("XYZ", func(s BaseSentence) (Sentence, error) {
+					p := NewParser(s)
+					return XYZType{
+						BaseSentence: s,
+						Time:         p.Time(0, "time"),
+						Label:        p.String(1, "label"),
+						Counter:      p.Int64(2, "counter"),
+						Value:        p.Float64(3, "value"),
+					}, p.Err()
+				})
+				Expect(err).ToNot(HaveOccurred())
+				sentence := "$00XYZ,220516,A,23,5133.82,W*42"
+				s, err := Parse(sentence)
+				Expect(err).ToNot(HaveOccurred())
 
-// func TestSentences(t *testing.T) {
-// 	for _, tt := range sentencetests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			sent, err := parseSentence(tt.raw)
-// 			if tt.err != "" {
-// 				assert.EqualError(t, err, tt.err)
-// 			} else {
-// 				assert.NoError(t, err)
-// 				assert.Equal(t, tt.sent, sent)
-// 				assert.Equal(t, tt.sent.Raw, sent.String())
-// 				assert.Equal(t, tt.datatype, sent.DataType())
-// 				assert.Equal(t, tt.talkerid, sent.TalkerID())
-// 				assert.Equal(t, tt.prefix, sent.Prefix())
-// 			}
-// 		})
-// 	}
-// }
-
-// var prefixtests = []struct {
-// 	name   string
-// 	prefix string
-// 	talker string
-// 	typ    string
-// }{
-// 	{
-// 		name:   "normal prefix",
-// 		prefix: "GPRMC",
-// 		talker: "GP",
-// 		typ:    "RMC",
-// 	},
-// 	{
-// 		name:   "missing type",
-// 		prefix: "GP",
-// 		talker: "GP",
-// 		typ:    "",
-// 	},
-// 	{
-// 		name:   "one character",
-// 		prefix: "X",
-// 		talker: "X",
-// 		typ:    "",
-// 	},
-// 	{
-// 		name:   "proprietary talker",
-// 		prefix: "PGRME",
-// 		talker: "P",
-// 		typ:    "GRME",
-// 	},
-// 	{
-// 		name:   "short proprietary talker",
-// 		prefix: "PX",
-// 		talker: "P",
-// 		typ:    "X",
-// 	},
-// }
-
-// func TestPrefix(t *testing.T) {
-// 	for _, tt := range prefixtests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			talker, typ := parsePrefix(tt.prefix)
-// 			assert.Equal(t, tt.talker, talker)
-// 			assert.Equal(t, tt.typ, typ)
-// 		})
-// 	}
-// }
-
-// var parsetests = []struct {
-// 	name string
-// 	raw  string
-// 	err  string
-// 	msg  interface{}
-// }{
-// 	{
-// 		name: "bad sentence",
-// 		raw:  "SDFSD,2340dfmswd",
-// 		err:  "nmea: sentence does not start with a '$' or '!'",
-// 	},
-// 	{
-// 		name: "bad sentence type",
-// 		raw:  "$INVALID,123,123,*7D",
-// 		err:  "nmea: sentence prefix 'INVALID' not supported",
-// 	},
-// 	{
-// 		name: "bad encapsulated sentence type",
-// 		raw:  "!INVALID,1,2,*7E",
-// 		err:  "nmea: sentence prefix 'INVALID' not supported",
-// 	},
-// }
-
-// func TestParse(t *testing.T) {
-// 	for _, tt := range parsetests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			m, err := Parse(tt.raw)
-// 			if tt.err != "" {
-// 				assert.EqualError(t, err, tt.err)
-// 			} else {
-// 				assert.NoError(t, err)
-// 				assert.Equal(t, tt.msg, m)
-// 			}
-// 		})
-// 	}
-// }
+				_, ok := s.(XYZType)
+				Expect(ok).To(BeTrue())
+			})
+		})
+	})
+	Describe("Testing the Parse function", func() {
+		Context("when a standard sentence is given", func() {
+			It("returns a valid value", func() {
+				result, err := Parse("$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				Expect(result).ToNot(BeNil())
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+		Context("when a unsupported sentence is given", func() {
+			It("returns an error", func() {
+				result, err := Parse("$PSTIS,*61")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence prefix 'PSTIS' not supported"))
+			})
+		})
+		Context("when a standard sentence is given with leading an trailing spaces", func() {
+			It("returns a valid value", func() {
+				result, err := Parse("     $GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03        				")
+				Expect(result).ToNot(BeNil())
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+		Context("when a standard sentence is given with a valid TAG block", func() {
+			It("returns a valid value", func() {
+				result, err := Parse("\\s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				Expect(result).ToNot(BeNil())
+				Expect(err).ToNot(HaveOccurred())
+			})
+		})
+		Context("when a standard sentence is given with a bad checksum", func() {
+			It("returns an error", func() {
+				result, err := Parse("$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*04")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence checksum mismatch [03 != 04]"))
+			})
+		})
+		Context("when a standard sentence is given with a bad start character", func() {
+			It("returns an error", func() {
+				result, err := Parse("%%GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
+			})
+		})
+		Context("when a standard sentence is given without a checksum seperator", func() {
+			It("returns an error", func() {
+				result, err := Parse("$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence does not contain checksum separator"))
+			})
+		})
+		Context("when a standard sentence is given without a start delimiter", func() {
+			It("returns an error", func() {
+				result, err := Parse("abc$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
+			})
+		})
+		Context("when a standard sentence is given without a TAG Block start delimiter", func() {
+			It("returns an error", func() {
+				result, err := Parse("s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
+			})
+		})
+		Context("when a standard sentence is given without a TAG Block end delimiter", func() {
+			It("returns an error", func() {
+				result, err := Parse("\\s:Satelite_1,c:1553390539*62!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				Expect(result).To(BeNil())
+				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
+			})
+		})
+	})
+})

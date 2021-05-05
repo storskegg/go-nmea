@@ -1,6 +1,8 @@
 package nmea_test
 
 import (
+	"time"
+
 	"github.com/BertoldVdb/go-ais"
 	. "github.com/munnik/go-nmea"
 	. "github.com/onsi/ginkgo"
@@ -13,20 +15,27 @@ var _ = Describe("VDMVDO", func() {
 		sentence Sentence
 		parsed   VDMVDO
 		err      error
-		raw      string
+		raws     []string
 	)
-	Describe("Parsing", func() {
-		JustBeforeEach(func() {
+	JustBeforeEach(func() {
+		for _, raw := range raws {
 			sentence, err = Parse(raw)
-			if sentence != nil {
-				parsed = sentence.(VDMVDO)
-			} else {
-				parsed = VDMVDO{}
+			if err != nil {
+				break
 			}
-		})
+		}
+		if sentence != nil {
+			parsed = sentence.(VDMVDO)
+		} else {
+			parsed = VDMVDO{}
+		}
+	})
+	Describe("Parsing", func() {
 		Context("a valid single fragment sentence", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,A,13aGt0PP0jPN@9fMPKVDJgwfR>`<,0*55"
+				raws = []string{
+					"!AIVDM,1,1,,A,13aGt0PP0jPN@9fMPKVDJgwfR>`<,0*55",
+				}
 			})
 			It("returns no errors", func() {
 				Expect(err).NotTo(HaveOccurred())
@@ -44,7 +53,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a valid single fragment sentence with padding", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,A,H77nSfPh4U=<E`H4U8G;:222220,2*1F"
+				raws = []string{
+					"!AIVDM,1,1,,A,H77nSfPh4U=<E`H4U8G;:222220,2*1F",
+				}
 			})
 			It("returns no errors", func() {
 				Expect(err).NotTo(HaveOccurred())
@@ -62,7 +73,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a valid multipart sentence", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,2,2,4,B,00000000000,2*23"
+				raws = []string{
+					"!AIVDM,2,2,4,B,00000000000,2*23",
+				}
 			})
 			It("returns no errors", func() {
 				Expect(err).NotTo(HaveOccurred())
@@ -80,7 +93,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a valid  sentence with an empty payload", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,1,,0*56"
+				raws = []string{
+					"!AIVDM,1,1,,1,,0*56",
+				}
 			})
 			It("returns no errors", func() {
 				Expect(err).NotTo(HaveOccurred())
@@ -98,7 +113,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with an invalid number of fragments", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,x,1,,1,000 00,0*0F"
+				raws = []string{
+					"!AIVDM,x,1,,1,000 00,0*0F",
+				}
 			})
 			It("returns an errors", func() {
 				Expect(err).To(MatchError("nmea: AIVDM invalid number of fragments: x"))
@@ -106,7 +123,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with an invalid symbol in the payload", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,1,000 00,0*46"
+				raws = []string{
+					"!AIVDM,1,1,,1,000 00,0*46",
+				}
 			})
 			It("returns an errors", func() {
 				Expect(err).To(MatchError("nmea: AIVDM invalid payload: data byte"))
@@ -114,7 +133,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with a negative number of fill bits", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,1,000,-3*48"
+				raws = []string{
+					"!AIVDM,1,1,,1,000,-3*48",
+				}
 			})
 			It("returns an errors", func() {
 				Expect(err).To(MatchError("nmea: AIVDM invalid payload: fill bits"))
@@ -122,7 +143,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with too much fill bits", func() {
 			BeforeEach(func() {
-				raw = "!AIVDO,1,1,,1,000,20*56"
+				raws = []string{
+					"!AIVDO,1,1,,1,000,20*56",
+				}
 			})
 			It("returns an errors", func() {
 				Expect(err).To(MatchError("nmea: AIVDO invalid payload: fill bits"))
@@ -130,7 +153,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with a negative number of bits", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,1,,2*54"
+				raws = []string{
+					"!AIVDM,1,1,,1,,2*54",
+				}
 			})
 			It("returns an errors", func() {
 				Expect(err).To(MatchError("nmea: AIVDM invalid payload: num bits"))
@@ -138,7 +163,9 @@ var _ = Describe("VDMVDO", func() {
 		})
 		Context("a sentence with a bad checksum", func() {
 			BeforeEach(func() {
-				raw = "!AIVDM,1,1,,A,13aGt0PP0jPN@9fMPKVDJgwfR>`<,0*54"
+				raws = []string{
+					"!AIVDM,1,1,,A,13aGt0PP0jPN@9fMPKVDJgwfR>`<,0*54",
+				}
 			})
 			It("returns an error", func() {
 				Expect(err).To(MatchError("nmea: sentence checksum mismatch [55 != 54]"))
@@ -147,27 +174,291 @@ var _ = Describe("VDMVDO", func() {
 				Expect(sentence).To(BeNil())
 			})
 		})
+		Context("when having a scheduled position report", func() {
+			BeforeEach(func() {
+				raws = []string{
+					"!AIVDM,1,1,,B,13aL>lwP0rPF<=8MSWjWSwwH2<3d,0*24",
+				}
+			})
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal(uint32(244780755)))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetCallSign()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetENINumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetIMONumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				Expect(parsed.GetNavigationStatus()).To(Equal("default"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselBeam()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselLength()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselName()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselType()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetRateOfTurn()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid course over ground", func() {
+				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(3.3772121026090276, 0.00001))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetTrueHeading()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid position", func() {
+				lat, lon, _ := parsed.GetPosition2D()
+				Expect(lat).To(Equal(51.65388333333333))
+				Expect(lon).To(Equal(4.8476333333333335))
+			})
+			It("returns a valid speed over ground", func() {
+				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(2.9837752, 0.00001))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDestination()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when having a scheduled position report", func() {
+			BeforeEach(func() {
+				raws = []string{
+					"!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*24 ",
+				}
+			})
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal(uint32(265547250)))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetCallSign()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetENINumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetIMONumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid navigation status", func() {
+				Expect(parsed.GetNavigationStatus()).To(Equal("motoring"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselBeam()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselLength()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselName()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselType()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid rate of turn", func() {
+				Skip("Need to verify this test")
+				Expect(parsed.GetRateOfTurn()).To(Float64Equal(-0.000581776417331, 0.00001))
+			})
+			It("returns a valid course over ground", func() {
+				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(0.7051130178, 0.00001))
+			})
+			It("returns a valid true heading", func() {
+				Expect(parsed.GetTrueHeading()).To(Float64Equal(0.7155849933, 0.00001))
+			})
+			It("returns a valid position", func() {
+				lat, lon, _ := parsed.GetPosition2D()
+				Expect(lat).To(Float64Equal(57.660353, 0.00001))
+				Expect(lon).To(Float64Equal(11.832977, 0.00001))
+			})
+			It("returns a valid speed over ground", func() {
+				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(7.1507777778, 0.00001))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDestination()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when having a ship static and voyage related data report", func() {
+			BeforeEach(func() {
+				raws = []string{
+					"!AIVDM,2,1,1,B,53aDr?H000010CS7OH04@Dh4q@D000000000001?1QR75u8kP05iDRiC,0*11",
+					"!AIVDM,2,2,1,B,Q0C@00000000000,2*44",
+				}
+			})
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal(uint32(244660797)))
+			})
+			It("returns a valid call sign", func() {
+				Expect(parsed.GetCallSign()).To(Equal("PD8176"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetENINumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid IMO number", func() {
+				Expect(parsed.GetIMONumber()).To(Equal("0"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetNavigationStatus()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid beam", func() {
+				Expect(parsed.GetVesselBeam()).To(Float64Equal(12, 0.00001))
+			})
+			It("returns a valid length", func() {
+				Expect(parsed.GetVesselLength()).To(Float64Equal(110, 0.00001))
+			})
+			It("returns a valid vessel name", func() {
+				Expect(parsed.GetVesselName()).To(Equal("ADELANTE"))
+			})
+			It("returns a valid vessel type", func() {
+				Expect(parsed.GetVesselType()).To(Equal("Cargo, No additional information"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetRateOfTurn()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetTrueCourseOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetTrueHeading()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, _, err := parsed.GetPosition2D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetSpeedOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid destination", func() {
+				Expect(parsed.GetDestination()).To(Equal("WERKENDAM"))
+			})
+			It("returns a valid eta", func() {
+				eta, _ := parsed.GetETA()
+				// Can't validate year because it depends on the actual date when the test is run
+				Expect(eta.Month()).To(Equal(time.Month(4)))
+				Expect(eta.Day()).To(Equal(17))
+				Expect(eta.Hour()).To(Equal(19))
+				Expect(eta.Minute()).To(Equal(32))
+				Expect(eta.Second()).To(Equal(0))
+				Expect(eta.Nanosecond()).To(Equal(0))
+				Expect(eta.Zone()).To(Equal("UTC"))
+			})
+		})
 	})
 	Describe("Getting data from a VDMVDO struct", func() {
-		JustBeforeEach(func() {
-			sentence := "!AIVDM,1,1,,B,139`4`0P00PF1l0MUSjN4?vJ2L5H,0*6A"
-			parseResult, err := Parse(sentence)
-			if err != nil {
-				Fail("Could not parse sentence")
-			}
-			var ok bool
-			if parsed, ok = parseResult.(VDMVDO); !ok {
-				Fail("Could not cast to VDMVDO")
-			}
-		})
-		Context("when having a complete struct", func() {
-			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal(uint32(211420320)))
+		Context("with a position report", func() {
+			var (
+				parsed VDMVDO
+			)
+			BeforeEach(func() {
+				parsed = VDMVDO{
+					Packet: ais.PositionReport{
+						Header: ais.Header{
+							UserID: 244660797,
+						},
+						Valid:                     true,
+						NavigationalStatus:        0,
+						RateOfTurn:                int8(-40),
+						Sog:                       ais.Field10(SpeedOverGroundKnots),
+						PositionAccuracy:          false,
+						Longitude:                 ais.FieldLatLonFine(Longitude),
+						Latitude:                  ais.FieldLatLonFine(Latitude),
+						Cog:                       ais.Field10(TrueDirectionDegrees),
+						TrueHeading:               uint16(212),
+						Timestamp:                 0,
+						SpecialManoeuvreIndicator: 0,
+						Spare:                     0,
+						Raim:                      false,
+					},
+				}
 			})
-			It("returns a valid Position", func() {
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal(uint32(244660797)))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetCallSign()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetENINumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetIMONumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				Expect(parsed.GetNavigationStatus()).To(Equal("motoring"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselBeam()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselLength()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselName()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselType()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid rate of turn", func() {
+				Skip("Need to verify this test")
+				Expect(parsed.GetRateOfTurn()).To(Float64Equal(-0.0507386737, 0.00001))
+			})
+			It("returns an error", func() {
+				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+			})
+			It("returns a valid true heading", func() {
+				Expect(parsed.GetTrueHeading()).To(Float64Equal(3.7000980142, 0.00001))
+			})
+			It("returns a valid position", func() {
 				lat, lon, _ := parsed.GetPosition2D()
-				Expect(lat).To(Equal(51.70678833333333))
-				Expect(lon).To(Equal(4.81216))
+				Expect(lat).To(Equal(Latitude))
+				Expect(lon).To(Equal(Longitude))
+			})
+			It("returns a valid speed over ground", func() {
+				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDestination()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetETA()
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

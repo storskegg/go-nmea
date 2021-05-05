@@ -3,6 +3,7 @@ package nmea
 // Latitude / longitude representation.
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"regexp"
@@ -305,7 +306,7 @@ func (v Float64) GetValue() (float64, error) {
 	if v.Valid {
 		return v.Value, nil
 	}
-	return 0, fmt.Errorf("the value is invalid")
+	return 0, errors.New(v.InvalidReason)
 }
 
 func ParseFloat64(s string) Float64 {
@@ -338,7 +339,7 @@ func (v Int64) GetValue() (int64, error) {
 	if v.Valid {
 		return v.Value, nil
 	}
-	return 0, fmt.Errorf("the value is invalid")
+	return 0, errors.New(v.InvalidReason)
 }
 
 func ParseInt64(s string) Int64 {
@@ -361,6 +362,7 @@ func NewString(v string) String {
 		Value: v,
 	}
 }
+
 func NewInvalidString(reason string) String {
 	return String{
 		InvalidReason: reason,
@@ -372,4 +374,23 @@ func (v String) GetValue() (string, error) {
 		return v.Value, nil
 	}
 	return "", fmt.Errorf("the value is invalid")
+}
+
+type StringList struct {
+	Valid         bool
+	InvalidReason string
+	Values        []String
+}
+
+func NewStringList(v []String) StringList {
+	return StringList{
+		Valid:  true,
+		Values: v,
+	}
+}
+
+func NewInvalidStringList(reason string) StringList {
+	return StringList{
+		InvalidReason: reason,
+	}
 }

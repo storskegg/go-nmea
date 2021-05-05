@@ -75,7 +75,7 @@ var _ = Describe("RMC", func() {
 			})
 		})
 	})
-	Describe("Getting directions from a $__RMC sentence", func() {
+	Describe("Getting data from a $__RMC sentence", func() {
 		BeforeEach(func() {
 			parsed = RMC{
 				Time: Time{
@@ -108,6 +108,9 @@ var _ = Describe("RMC", func() {
 			It("returns a valid true course over ground", func() {
 				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
 			})
+			It("returns a valid speed over ground", func() {
+				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+			})
 			It("returns a valid magnetic variation", func() {
 				Expect(parsed.GetMagneticVariation()).To(Float64Equal(MagneticVariationRadians, 0.00001))
 			})
@@ -119,14 +122,24 @@ var _ = Describe("RMC", func() {
 			JustBeforeEach(func() {
 				parsed.Validity = NewString(InvalidRMC)
 			})
-			Specify("an error is returned when trying to retrieve the true course over ground", func() {
-				value, err := parsed.GetTrueCourseOverGround()
-				Expect(value).To(BeZero())
+			It("returns an error", func() {
+				_, _, err := parsed.GetPosition2D()
 				Expect(err).To(HaveOccurred())
 			})
-			Specify("an error is returned when trying to retrieve the magnetic variation", func() {
-				value, err := parsed.GetMagneticVariation()
-				Expect(value).To(BeZero())
+			It("returns an error", func() {
+				_, err := parsed.GetTrueCourseOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetSpeedOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetMagneticVariation()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDateTime()
 				Expect(err).To(HaveOccurred())
 			})
 		})

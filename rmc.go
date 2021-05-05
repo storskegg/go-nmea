@@ -53,16 +53,20 @@ func newRMC(s BaseSentence) (RMC, error) {
 
 // GetMagneticVariation retrieves the magnetic variation from the sentence
 func (s RMC) GetMagneticVariation() (float64, error) {
-	if v, err := s.Variation.GetValue(); err == nil && s.Validity.Value == ValidRMC {
-		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	if s.Validity.Value == ValidRMC {
+		if v, err := s.Variation.GetValue(); err == nil {
+			return (unit.Angle(v) * unit.Degree).Radians(), nil
+		}
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
 
 // GetTrueCourseOverGround retrieves the true course over ground from the sentence
 func (s RMC) GetTrueCourseOverGround() (float64, error) {
-	if v, err := s.Course.GetValue(); err == nil && s.Validity.Value == ValidRMC {
-		return (unit.Angle(v) * unit.Degree).Radians(), nil
+	if s.Validity.Value == ValidRMC {
+		if v, err := s.Course.GetValue(); err == nil {
+			return (unit.Angle(v) * unit.Degree).Radians(), nil
+		}
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -70,9 +74,9 @@ func (s RMC) GetTrueCourseOverGround() (float64, error) {
 // GetPosition2D retrieves the latitude and longitude from the sentence
 func (s RMC) GetPosition2D() (float64, float64, error) {
 	if s.Validity.Value == ValidRMC {
-		if vLat, err := s.Latitude.GetValue(); err == nil {
-			if vLon, err := s.Longitude.GetValue(); err == nil {
-				return vLat, vLon, nil
+		if latitude, err := s.Latitude.GetValue(); err == nil {
+			if longitude, err := s.Longitude.GetValue(); err == nil {
+				return latitude, longitude, nil
 			}
 		}
 	}
@@ -81,25 +85,29 @@ func (s RMC) GetPosition2D() (float64, float64, error) {
 
 // GetSpeedOverGround retrieves the speed over ground from the sentence
 func (s RMC) GetSpeedOverGround() (float64, error) {
-	if v, err := s.Speed.GetValue(); err == nil && s.Validity.Value == ValidRMC {
-		return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
+	if s.Validity.Value == ValidRMC {
+		if v, err := s.Speed.GetValue(); err == nil {
+			return (unit.Speed(v) * unit.Knot).MetersPerSecond(), nil
+		}
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
 
 // GetDateTime retrieves the date and time in RFC3339Nano format
 func (s RMC) GetDateTime() (string, error) {
-	if s.Date.Valid && s.Time.Valid {
-		return time.Date(
-			s.Date.YY,
-			time.Month(s.Date.MM),
-			s.Date.DD,
-			s.Time.Hour,
-			s.Time.Minute,
-			s.Time.Second,
-			s.Time.Millisecond*1000000,
-			time.UTC,
-		).UTC().Format(time.RFC3339Nano), nil
+	if s.Validity.Value == ValidRMC {
+		if s.Date.Valid && s.Time.Valid {
+			return time.Date(
+				s.Date.YY,
+				time.Month(s.Date.MM),
+				s.Date.DD,
+				s.Time.Hour,
+				s.Time.Minute,
+				s.Time.Second,
+				s.Time.Millisecond*1000000,
+				time.UTC,
+			).UTC().Format(time.RFC3339Nano), nil
+		}
 	}
 	return "", fmt.Errorf("value is unavailable")
 }

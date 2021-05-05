@@ -35,7 +35,7 @@ var _ = Describe("GNS", func() {
 					"Time":       Equal(NewTime(1, 40, 35, 0)),
 					"Latitude":   Equal(NewFloat64(-43.544877)),
 					"Longitude":  Equal(NewFloat64(172.59142483333332)),
-					"Mode":       Equal([]String{NewString("R"), NewString("R")}),
+					"Mode":       Equal(NewStringList([]String{NewString("R"), NewString("R")})),
 					"SVs":        Equal(NewInt64(13)),
 					"HDOP":       Equal(NewFloat64(0.9)),
 					"Altitude":   Equal(NewFloat64(25.63)),
@@ -57,7 +57,7 @@ var _ = Describe("GNS", func() {
 					"Time":       Equal(NewTime(9, 48, 21, 0)),
 					"Latitude":   Equal(NewFloat64(48.83218845)),
 					"Longitude":  Equal(NewFloat64(2.2675553833333333)),
-					"Mode":       Equal([]String{NewString("A"), NewString("A")}),
+					"Mode":       Equal(NewStringList([]String{NewString("A"), NewString("A")})),
 					"SVs":        Equal(NewInt64(14)),
 					"HDOP":       Equal(NewFloat64(0.6)),
 					"Altitude":   Equal(NewFloat64(161.5)),
@@ -79,7 +79,7 @@ var _ = Describe("GNS", func() {
 					"Time":       Equal(NewTime(9, 48, 21, 0)),
 					"Latitude":   Equal(NewFloat64(48.83218845)),
 					"Longitude":  Equal(NewFloat64(2.2675553833333333)),
-					"Mode":       Equal([]String{NewString("A"), NewString("A"), NewString("N")}),
+					"Mode":       Equal(NewStringList([]String{NewString("A"), NewString("A"), NewString("N")})),
 					"SVs":        Equal(NewInt64(14)),
 					"HDOP":       Equal(NewFloat64(0.6)),
 					"Altitude":   Equal(NewFloat64(161.5)),
@@ -101,7 +101,7 @@ var _ = Describe("GNS", func() {
 					"Time":       Equal(NewTime(9, 48, 21, 0)),
 					"Latitude":   Equal(NewFloat64(48.83218845)),
 					"Longitude":  Equal(NewFloat64(2.2675553833333333)),
-					"Mode":       Equal([]String{}),
+					"Mode":       Equal(NewStringList([]String{})),
 					"SVs":        Equal(NewInt64(14)),
 					"HDOP":       Equal(NewFloat64(0.6)),
 					"Altitude":   Equal(NewFloat64(161.5)),
@@ -123,7 +123,7 @@ var _ = Describe("GNS", func() {
 					"Time":       Equal(NewTime(9, 48, 21, 0)),
 					"Latitude":   Equal(NewFloat64(48.83218845)),
 					"Longitude":  Equal(NewFloat64(2.2675553833333333)),
-					"Mode":       Equal([]String{}),
+					"Mode":       Equal(NewStringList([]String{NewString("P"), NewInvalidString("not a valid option"), NewInvalidString("not a valid option"), NewString("R")})),
 					"SVs":        Equal(NewInt64(14)),
 					"HDOP":       Equal(NewFloat64(0.6)),
 					"Altitude":   Equal(NewFloat64(161.5)),
@@ -151,7 +151,7 @@ var _ = Describe("GNS", func() {
 				Time:       Time{},
 				Latitude:   NewFloat64(Latitude),
 				Longitude:  NewFloat64(Longitude),
-				Mode:       []String{NewString(SimulatorGNS)},
+				Mode:       NewStringList([]String{NewString(SimulatorGNS)}),
 				SVs:        NewInvalidInt64(""),
 				HDOP:       NewInvalidFloat64(""),
 				Altitude:   NewFloat64(Altitude),
@@ -166,6 +166,34 @@ var _ = Describe("GNS", func() {
 				Expect(lat).To(Equal(Latitude))
 				Expect(lon).To(Equal(Longitude))
 				Expect(alt).To(Equal(Altitude))
+			})
+		})
+		Context("when having a struct with missing longitude", func() {
+			JustBeforeEach(func() {
+				parsed.Longitude = NewInvalidFloat64("")
+			})
+			It("returns an error", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+
+		})
+		Context("when having a struct with missing latitude", func() {
+			JustBeforeEach(func() {
+				parsed.Latitude = NewInvalidFloat64("")
+			})
+			It("returns an error", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+		})
+		Context("when having a struct with missing altitude", func() {
+			JustBeforeEach(func() {
+				parsed.Altitude = NewInvalidFloat64("")
+			})
+			It("returns an error", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
 			})
 		})
 	})

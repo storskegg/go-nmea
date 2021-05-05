@@ -14,11 +14,11 @@ const (
 // RTE is a route of waypoints
 type RTE struct {
 	BaseSentence
-	NumberOfSentences         Int64    // Number of sentences in sequence
-	SentenceNumber            Int64    // Sentence number
-	ActiveRouteOrWaypointList String   // Current active route or waypoint list
-	Name                      String   // Name or number of active route
-	Idents                    []String // List of ident of waypoints
+	NumberOfSentences         Int64      // Number of sentences in sequence
+	SentenceNumber            Int64      // Sentence number
+	ActiveRouteOrWaypointList String     // Current active route or waypoint list
+	Name                      String     // Name or number of active route
+	Idents                    StringList // List of ident of waypoints
 }
 
 // newRTE constructor

@@ -108,5 +108,14 @@ var _ = Describe("GSA", func() {
 				Expect(parsed.GetFixType()).To(Equal(Fix3D))
 			})
 		})
+		Context("when having a struct with missing fix type", func() {
+			JustBeforeEach(func() {
+				parsed.FixType = NewInvalidString("")
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetFixType()
+				Expect(err).To(HaveOccurred())
+			})
+		})
 	})
 })

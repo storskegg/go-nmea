@@ -1,5 +1,7 @@
 package nmea
 
+import "time"
+
 // MagneticCourseOverGround retrieves the magnetic course over ground from the sentence
 type MagneticCourseOverGround interface {
 	GetmagneticCourseOverGround() (float64, error)
@@ -174,4 +176,14 @@ type VesselName interface {
 // VesselType retrieves the type of the vessel from the sentence
 type VesselType interface {
 	GetVesselType() (string, error)
+}
+
+// Destination retrieves the destination of the vessel from the sentence
+type Destination interface {
+	GetDestination() (string, error)
+}
+
+// ETA retrieves the ETA of the vessel from the sentence
+type ETA interface {
+	GetETA() (time.Time, error)
 }

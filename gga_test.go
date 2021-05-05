@@ -209,5 +209,23 @@ var _ = Describe("GGA", func() {
 				Expect(parsed.GetFixQuality()).To(Equal(DGPS))
 			})
 		})
+		Context("when having a struct with missing number of satellites and fix quality", func() {
+			JustBeforeEach(func() {
+				parsed.NumSatellites = NewInvalidInt64("")
+				parsed.FixQuality = NewInvalidString("")
+			})
+			It("returns an error", func() {
+				_, _, _, err := parsed.GetPosition3D()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetNumberOfSatellites()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetFixQuality()
+				Expect(err).To(HaveOccurred())
+			})
+		})
 	})
 })
