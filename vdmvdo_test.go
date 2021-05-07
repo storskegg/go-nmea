@@ -241,7 +241,7 @@ var _ = Describe("VDMVDO", func() {
 		Context("when having a scheduled position report", func() {
 			BeforeEach(func() {
 				raws = []string{
-					"!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*24 ",
+					"!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*24",
 				}
 			})
 			It("returns a valid MMSI", func() {
@@ -278,19 +278,19 @@ var _ = Describe("VDMVDO", func() {
 				_, err := parsed.GetVesselType()
 				Expect(err).To(HaveOccurred())
 			})
-			XIt("returns a valid rate of turn", func() {
-				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.000581776417331, 0.00001))
+			It("returns a valid rate of turn", func() {
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.050614548308/60.0, 0.0001))
 			})
 			It("returns a valid course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", 0.7051130178, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", 0.70511301781, 0.00001))
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 0.7155849933, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 0.71558499332, 0.00001))
 			})
 			It("returns a valid position", func() {
 				lat, lon, _ := parsed.GetPosition2D()
-				Expect(lat).To(BeNumerically("~", 57.660353, 0.00001))
-				Expect(lon).To(BeNumerically("~", 11.832977, 0.00001))
+				Expect(lat).To(BeNumerically("~", 57.6603533, 0.00001))
+				Expect(lon).To(BeNumerically("~", 11.8329767, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
 				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 7.1507777778, 0.00001))
@@ -433,8 +433,8 @@ var _ = Describe("VDMVDO", func() {
 				_, err := parsed.GetVesselType()
 				Expect(err).To(HaveOccurred())
 			})
-			XIt("returns a valid rate of turn", func() {
-				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.0507386737, 0.00001))
+			It("returns a valid rate of turn", func() {
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.020776533612, 0.00001))
 			})
 			It("returns an error", func() {
 				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
