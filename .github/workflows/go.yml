@@ -26,6 +26,10 @@ jobs:
       
     - name: Get Gomega
       run: go get github.com/onsi/gomega/...
+      
+    - name: Get Code Coverage converter
+      run: go get -u github.com/jandelgado/gcov2lcov
 
     - name: Test
-      run:  ginkgo -r -race -cover 
+      run:  ginkgo -r -race -cover --afterSuiteHook="gcov2lcov -infile=go-nmea.coverprofile -outfile=lcov.info"
+      
