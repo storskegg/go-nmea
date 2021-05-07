@@ -20,6 +20,12 @@ jobs:
 
     - name: Build
       run: go build -v ./...
+      
+    - name: Get Ginkgo
+      run: go get github.com/onsi/ginkgo/ginkgo
+      
+    - name: Get Gomega
+      run: go get github.com/onsi/gomega/...
 
     - name: Test
-      run: go test -v ./...
+      run:  ginkgo -r -race -cover 
