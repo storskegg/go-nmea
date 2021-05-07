@@ -1,13 +1,10 @@
 package nmea_test
 
 import (
-	"fmt"
-	"math"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/types"
 )
 
 const (
@@ -71,34 +68,4 @@ const (
 func TestGoNmea(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "GoNmea Suite")
-}
-
-// Float64Matcher is used to match two float64s and make sure the are 'close enough'
-type Float64Matcher struct {
-	Expected float64
-	Delta    float64
-}
-
-func Float64Equal(expected float64, delta float64) types.GomegaMatcher {
-	return &Float64Matcher{
-		Expected: expected,
-		Delta:    delta,
-	}
-}
-
-func (matcher *Float64Matcher) Match(actual interface{}) (bool, error) {
-	actualFloat, ok := actual.(float64)
-	if !ok {
-		return false, fmt.Errorf("matcher expects a float64")
-	}
-
-	return math.Abs(matcher.Expected-actualFloat) <= matcher.Delta, nil
-}
-
-func (matcher *Float64Matcher) FailureMessage(actual interface{}) string {
-	return fmt.Sprintf("Expected\n\t%#v\nto be close enough (delta less than or equal to %f) to\n\t%f", actual, matcher.Delta, matcher.Expected)
-}
-
-func (matcher *Float64Matcher) NegatedFailureMessage(actual interface{}) string {
-	return fmt.Sprintf("Expected\n\t%#v\nnot to be close enough (delta less than or equal to %f) to\n\t%f", actual, matcher.Delta, matcher.Expected)
 }

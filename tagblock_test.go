@@ -1,124 +1,77 @@
 package nmea_test
 
-// import (
-// 	"testing"
+import (
+	. "github.com/munnik/go-nmea"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
 
-// 	"github.com/stretchr/testify/assert"
-// )
-
-// var tagblocktests = []struct {
-// 	name string
-// 	raw  string
-// 	err  string
-// 	msg  TagBlock
-// }{
-// 	{
-
-// 		name: "Test NMEA tag block",
-// 		raw:  "s:Satelite_1,c:1553390539*62",
-// 		msg: TagBlock{
-// 			Time:   NewInt64(1553390539),
-// 			Source: "Satelite_1",
-// 		},
-// 	},
-// 	{
-
-// 		name: "Test NMEA tag block with head",
-// 		raw:  "s:satelite,c:1564827317*25",
-// 		msg: TagBlock{
-// 			Time:   NewInt64(1564827317),
-// 			Source: "satelite",
-// 		},
-// 	},
-// 	{
-
-// 		name: "Test unknown tag",
-// 		raw:  "x:NorSat_1,c:1564827317*42",
-// 		msg: TagBlock{
-// 			Time:   NewInt64(1564827317),
-// 			Source: "",
-// 		},
-// 	},
-// 	{
-// 		name: "Test unix timestamp",
-// 		raw:  "x:NorSat_1,c:1564827317*42",
-// 		msg: TagBlock{
-// 			Time:   NewInt64(1564827317),
-// 			Source: "",
-// 		},
-// 	},
-// 	{
-
-// 		name: "Test milliseconds timestamp",
-// 		raw:  "x:NorSat_1,c:1564827317000*72",
-// 		msg: TagBlock{
-// 			Time:   NewInt64(1564827317000),
-// 			Source: "",
-// 		},
-// 	},
-// 	{
-
-// 		name: "Test all input types",
-// 		raw:  "s:satelite,c:1564827317,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*3F",
-// 		msg: TagBlock{
-// 			Time:         NewInt64(1564827317),
-// 			RelativeTime: NewInt64(1553390539),
-// 			Destination:  "ara",
-// 			Grouping:     "bulk",
-// 			Source:       "satelite",
-// 			Text:         "helloworld",
-// 			LineCount:    NewInt64(13),
-// 		},
-// 	},
-// 	{
-
-// 		name: "Test empty tag in tagblock",
-// 		raw:  "s:satelite,,r: Int64{Valid:true,Value: 1553390539},d:ara,g:bulk,n: Int64{Valid:true,Value: 13},t:helloworld*68",
-// 		err:  "nmea: tagblock field is malformed (should be <key>:<value>) []",
-// 	},
-// 	{
-
-// 		name: "Test Invalid checksum",
-// 		raw:  "s:satelite,c:1564827317*49",
-// 		err:  "nmea: tagblock checksum mismatch [25 != 49]",
-// 	},
-// 	{
-
-// 		name: "Test no checksum",
-// 		raw:  "s:satelite,c:156482731749",
-// 		err:  "nmea: tagblock does not contain checksum separator",
-// 	},
-// 	{
-
-// 		name: "Test invalid timestamp",
-// 		raw:  "s:satelite,c:gjadslkg*30",
-// 		err:  "nmea: tagblock unable to parse uint64 [gjadslkg]",
-// 	},
-// 	{
-
-// 		name: "Test invalid linecount",
-// 		raw:  "s:satelite,n:gjadslkg*3D",
-// 		err:  "nmea: tagblock unable to parse uint64 [gjadslkg]",
-// 	},
-// 	{
-
-// 		name: "Test invalid relative time",
-// 		raw:  "s:satelite,r:gjadslkg*21",
-// 		err:  "nmea: tagblock unable to parse uint64 [gjadslkg]",
-// 	},
-// }
-
-// func TestTagBlock(t *testing.T) {
-// 	for _, tt := range tagblocktests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			m, err := parseTagBlock(tt.raw)
-// 			if tt.err != "" {
-// 				assert.Error(t, err)
-// 				assert.EqualError(t, err, tt.err)
-// 			} else {
-// 				assert.NoError(t, err)
-// 				assert.Equal(t, tt.msg, m)
-// 			}
-// 		})
-// 	}
-// }
+var _ = Describe("Tagblock", func() {
+	Describe("Testing Parse method", func() {
+		Context("with a basic tag block", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\s:Satelite_1,c:1553390539*62\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeTrue())
+				Expect(rmc.TagBlock.Time).To(Equal(NewInt64(1553390539)))
+				Expect(rmc.TagBlock.Source).To(Equal(NewString("Satelite_1")))
+			})
+		})
+		Context("with a tag block with an unknown tag", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\x:NorSat_1,c:1564827317*42\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeTrue())
+				Expect(rmc.TagBlock.Time).To(Equal(NewInt64(1564827317)))
+				Expect(rmc.TagBlock.Source).To(Equal(NewInvalidString("not specified")))
+			})
+		})
+		Context("with a tag block with an unknown tag and ten millisecond timestamp", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\x:NorSat_1,c:1564827317000*72\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeTrue())
+				Expect(rmc.TagBlock.Time).To(Equal(NewInt64(1564827317000)))
+				Expect(rmc.TagBlock.Source).To(Equal(NewInvalidString("not specified")))
+			})
+		})
+		Context("with a tag block with all tags", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\s:satelite,c:1564827317,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*3F\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeTrue())
+				Expect(rmc.TagBlock.Time).To(Equal(NewInt64(1564827317)))
+				Expect(rmc.TagBlock.RelativeTime).To(Equal(NewInt64(1553390539)))
+				Expect(rmc.TagBlock.Destination).To(Equal(NewString("ara")))
+				Expect(rmc.TagBlock.Grouping).To(Equal(NewString("bulk")))
+				Expect(rmc.TagBlock.Source).To(Equal(NewString("satelite")))
+				Expect(rmc.TagBlock.Text).To(Equal(NewString("helloworld")))
+				Expect(rmc.TagBlock.LineCount).To(Equal(NewInt64(13)))
+			})
+		})
+		Context("with a tag block with an empty tag", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\s:satelite,,c:1564827317,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*13\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeFalse())
+				Expect(rmc.TagBlock.InvalidReason).To(Equal("nmea: tagblock field is malformed (should be <key>:<value>) []"))
+			})
+		})
+		Context("with a tag block with an invalid checksum", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\s:satelite,c:1564827317,r:1553390539,d:ara,g:bulk,n:13,t:helloworld*3A\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeFalse())
+				Expect(rmc.TagBlock.InvalidReason).To(Equal("nmea: tagblock checksum mismatch [3F != 3A]"))
+			})
+		})
+		Context("with a tag block without a checksum", func() {
+			It("returns a valid value", func() {
+				result, _ := Parse("\\s:satelite,c:156482731749\\$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A*03")
+				rmc := result.(RMC)
+				Expect(rmc.TagBlock.Valid).To(BeFalse())
+				Expect(rmc.TagBlock.InvalidReason).To(Equal("nmea: tagblock does not contain checksum separator"))
+			})
+		})
+	})
+})

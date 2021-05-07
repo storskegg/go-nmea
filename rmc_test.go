@@ -106,13 +106,13 @@ var _ = Describe("RMC", func() {
 				Expect(lon).To(Equal(Longitude))
 			})
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 			It("returns a valid magnetic variation", func() {
-				Expect(parsed.GetMagneticVariation()).To(Float64Equal(MagneticVariationRadians, 0.00001))
+				Expect(parsed.GetMagneticVariation()).To(BeNumerically("~", MagneticVariationRadians, 0.00001))
 			})
 			It("returns a valid date and time", func() {
 				Expect(parsed.GetDateTime()).To(Equal("2021-04-16T20:05:45.315Z"))

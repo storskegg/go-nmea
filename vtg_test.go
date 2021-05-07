@@ -62,13 +62,13 @@ var _ = Describe("VTG", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic course over ground", func() {
-				Expect(parsed.GetMagneticCourseOverGround()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticCourseOverGround()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing true track", func() {
@@ -80,10 +80,10 @@ var _ = Describe("VTG", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid magnetic course over ground", func() {
-				Expect(parsed.GetMagneticCourseOverGround()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticCourseOverGround()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing magnetic track", func() {
@@ -91,14 +91,14 @@ var _ = Describe("VTG", func() {
 				parsed.MagneticTrack = NewInvalidFloat64("")
 			})
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetMagneticCourseOverGround()
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground kph", func() {
@@ -106,13 +106,13 @@ var _ = Describe("VTG", func() {
 				parsed.GroundSpeedKPH = NewInvalidFloat64("")
 			})
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic course over ground", func() {
-				Expect(parsed.GetMagneticCourseOverGround()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticCourseOverGround()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground knots", func() {
@@ -120,13 +120,13 @@ var _ = Describe("VTG", func() {
 				parsed.GroundSpeedKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic course over ground", func() {
-				Expect(parsed.GetMagneticCourseOverGround()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticCourseOverGround()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground kph and knots", func() {
@@ -135,10 +135,10 @@ var _ = Describe("VTG", func() {
 				parsed.GroundSpeedKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid true course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic course over ground", func() {
-				Expect(parsed.GetMagneticCourseOverGround()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticCourseOverGround()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetSpeedOverGround()

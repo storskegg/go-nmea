@@ -62,13 +62,13 @@ var _ = Describe("VHW", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic heading", func() {
-				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticHeading()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed through water", func() {
-				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
+				Expect(parsed.GetSpeedThroughWater()).To(BeNumerically("~", SpeedThroughWaterMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing true heading", func() {
@@ -80,10 +80,10 @@ var _ = Describe("VHW", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid magnetic heading", func() {
-				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticHeading()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed through water", func() {
-				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
+				Expect(parsed.GetSpeedThroughWater()).To(BeNumerically("~", SpeedThroughWaterMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing magnetic track", func() {
@@ -91,14 +91,14 @@ var _ = Describe("VHW", func() {
 				parsed.MagneticHeading = NewInvalidFloat64("")
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetMagneticHeading()
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid speed through water", func() {
-				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
+				Expect(parsed.GetSpeedThroughWater()).To(BeNumerically("~", SpeedThroughWaterMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground kph", func() {
@@ -106,13 +106,13 @@ var _ = Describe("VHW", func() {
 				parsed.SpeedThroughWaterKPH = NewInvalidFloat64("")
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic heading", func() {
-				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticHeading()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed through water", func() {
-				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
+				Expect(parsed.GetSpeedThroughWater()).To(BeNumerically("~", SpeedThroughWaterMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground knots", func() {
@@ -120,13 +120,13 @@ var _ = Describe("VHW", func() {
 				parsed.SpeedThroughWaterKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic heading", func() {
-				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticHeading()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid speed through water", func() {
-				Expect(parsed.GetSpeedThroughWater()).To(Float64Equal(SpeedThroughWaterMPS, 0.00001))
+				Expect(parsed.GetSpeedThroughWater()).To(BeNumerically("~", SpeedThroughWaterMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing speed over ground kph and knots", func() {
@@ -135,10 +135,10 @@ var _ = Describe("VHW", func() {
 				parsed.SpeedThroughWaterKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic heading", func() {
-				Expect(parsed.GetMagneticHeading()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticHeading()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetSpeedThroughWater()

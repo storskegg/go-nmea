@@ -64,10 +64,10 @@ var _ = Describe("VWR", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a complete struct with angle set to left of bow", func() {
@@ -75,10 +75,10 @@ var _ = Describe("VWR", func() {
 				parsed.LeftRightOfBow = NewString(LeftOfBow)
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(0-RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", 0-RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing wind speed in meters per second", func() {
@@ -86,10 +86,10 @@ var _ = Describe("VWR", func() {
 				parsed.WindSpeedInMetersPerSecond = NewInvalidFloat64("")
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing wind speed in kilometer per hour", func() {
@@ -97,10 +97,10 @@ var _ = Describe("VWR", func() {
 				parsed.WindSpeedInKilometersPerHour = NewInvalidFloat64("")
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing wind speed in knots", func() {
@@ -108,10 +108,10 @@ var _ = Describe("VWR", func() {
 				parsed.WindSpeedInKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing wind speed in meters per second and wind speed in knots", func() {
@@ -120,10 +120,10 @@ var _ = Describe("VWR", func() {
 				parsed.WindSpeedInKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing wind speed in meters per second and wind speed in kilometer per hour", func() {
@@ -132,10 +132,10 @@ var _ = Describe("VWR", func() {
 				parsed.WindSpeedInKilometersPerHour = NewInvalidFloat64("")
 			})
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing data", func() {

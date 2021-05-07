@@ -11,17 +11,17 @@ var _ = Describe("Types", func() {
 		Context("when parsing latitude or longitude", func() {
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseLatLong("33\u00B0 12' 34.3423\"").GetValue()
-				Expect(result).To(Float64Equal(33.209540, 0.00001))
+				Expect(result).To(BeNumerically("~", 33.209540, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseLatLong("3345.1232 N").GetValue()
-				Expect(result).To(Float64Equal(33.752054, 0.00001))
+				Expect(result).To(BeNumerically("~", 33.752054, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseLatLong("151.234532").GetValue()
-				Expect(result).To(Float64Equal(151.234532, 0.00001))
+				Expect(result).To(BeNumerically("~", 151.234532, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns an invalid latitude or longitude", func() {
@@ -43,12 +43,12 @@ var _ = Describe("Types", func() {
 		Context("when parsing gps", func() {
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseGPS("3345.1232 N").GetValue()
-				Expect(result).To(Float64Equal(33.752054, 0.00001))
+				Expect(result).To(BeNumerically("~", 33.752054, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseGPS("15145.9877 S").GetValue()
-				Expect(result).To(Float64Equal(-151.76646, 0.00001))
+				Expect(result).To(BeNumerically("~", -151.76646, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns an invalid latitude or longitude", func() {
@@ -65,7 +65,7 @@ var _ = Describe("Types", func() {
 		Context("when parsing dms", func() {
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseDMS("33\u00B0 12' 34.3423\"").GetValue()
-				Expect(result).To(Float64Equal(33.209540, 0.00001))
+				Expect(result).To(BeNumerically("~", 33.209540, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns an invalid latitude or longitude", func() {
@@ -97,12 +97,12 @@ var _ = Describe("Types", func() {
 		Context("when parsing decimal", func() {
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseDecimal("151.234532").GetValue()
-				Expect(result).To(Float64Equal(151.234532, 0.00001))
+				Expect(result).To(BeNumerically("~", 151.234532, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns a valid latitude or longitude", func() {
 				result, err := ParseDecimal("-151.234532").GetValue()
-				Expect(result).To(Float64Equal(-151.234532, 0.00001))
+				Expect(result).To(BeNumerically("~", -151.234532, 0.00001))
 				Expect(err).ToNot(HaveOccurred())
 			})
 			It("returns an invalid latitude or longitude", func() {

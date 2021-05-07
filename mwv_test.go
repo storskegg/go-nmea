@@ -115,14 +115,14 @@ var _ = Describe("MWV", func() {
 		})
 		Context("when having a struct with reference set to relative", func() {
 			It("returns a valid relative wind direction", func() {
-				Expect(parsed.GetRelativeWindDirection()).To(Float64Equal(RelativeDirectionRadians, 0.00001))
+				Expect(parsed.GetRelativeWindDirection()).To(BeNumerically("~", RelativeDirectionRadians, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetTrueWindDirection()
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with reference set to true", func() {
@@ -135,7 +135,7 @@ var _ = Describe("MWV", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid true wind direction", func() {
-				Expect(parsed.GetTrueWindDirection()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueWindDirection()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 		})
 		Context("when having a struct with wind speed in kmh", func() {
@@ -144,7 +144,7 @@ var _ = Describe("MWV", func() {
 				parsed.WindSpeedUnit = NewString(WindSpeedUnitKPH)
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with wind speed in knots", func() {
@@ -153,7 +153,7 @@ var _ = Describe("MWV", func() {
 				parsed.WindSpeedUnit = NewString(WindSpeedUnitKnots)
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with an invalid wind speed unit", func() {

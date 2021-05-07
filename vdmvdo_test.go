@@ -219,7 +219,7 @@ var _ = Describe("VDMVDO", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(3.3772121026090276, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", 3.3772121026090276, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetTrueHeading()
@@ -231,7 +231,7 @@ var _ = Describe("VDMVDO", func() {
 				Expect(lon).To(Equal(4.8476333333333335))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(2.9837752, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 2.9837752, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDestination()
@@ -278,23 +278,22 @@ var _ = Describe("VDMVDO", func() {
 				_, err := parsed.GetVesselType()
 				Expect(err).To(HaveOccurred())
 			})
-			It("returns a valid rate of turn", func() {
-				Skip("Need to verify this test")
-				Expect(parsed.GetRateOfTurn()).To(Float64Equal(-0.000581776417331, 0.00001))
+			XIt("returns a valid rate of turn", func() {
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.000581776417331, 0.00001))
 			})
 			It("returns a valid course over ground", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(0.7051130178, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", 0.7051130178, 0.00001))
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(0.7155849933, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 0.7155849933, 0.00001))
 			})
 			It("returns a valid position", func() {
 				lat, lon, _ := parsed.GetPosition2D()
-				Expect(lat).To(Float64Equal(57.660353, 0.00001))
-				Expect(lon).To(Float64Equal(11.832977, 0.00001))
+				Expect(lat).To(BeNumerically("~", 57.660353, 0.00001))
+				Expect(lon).To(BeNumerically("~", 11.832977, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(7.1507777778, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 7.1507777778, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDestination()
@@ -326,10 +325,10 @@ var _ = Describe("VDMVDO", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid beam", func() {
-				Expect(parsed.GetVesselBeam()).To(Float64Equal(12, 0.00001))
+				Expect(parsed.GetVesselBeam()).To(BeNumerically("~", 12, 0.00001))
 			})
 			It("returns a valid length", func() {
-				Expect(parsed.GetVesselLength()).To(Float64Equal(110, 0.00001))
+				Expect(parsed.GetVesselLength()).To(BeNumerically("~", 110, 0.00001))
 			})
 			It("returns a valid vessel name", func() {
 				Expect(parsed.GetVesselName()).To(Equal("ADELANTE"))
@@ -434,15 +433,14 @@ var _ = Describe("VDMVDO", func() {
 				_, err := parsed.GetVesselType()
 				Expect(err).To(HaveOccurred())
 			})
-			It("returns a valid rate of turn", func() {
-				Skip("Need to verify this test")
-				Expect(parsed.GetRateOfTurn()).To(Float64Equal(-0.0507386737, 0.00001))
+			XIt("returns a valid rate of turn", func() {
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.0507386737, 0.00001))
 			})
 			It("returns an error", func() {
-				Expect(parsed.GetTrueCourseOverGround()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(3.7000980142, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 3.7000980142, 0.00001))
 			})
 			It("returns a valid position", func() {
 				lat, lon, _ := parsed.GetPosition2D()
@@ -450,7 +448,7 @@ var _ = Describe("VDMVDO", func() {
 				Expect(lon).To(Equal(Longitude))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDestination()

@@ -74,28 +74,28 @@ var _ = Describe("MDA", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid outside pressure", func() {
-				Expect(parsed.GetOutsidePressure()).To(Float64Equal(PressurePascal, 0.00001))
+				Expect(parsed.GetOutsidePressure()).To(BeNumerically("~", PressurePascal, 0.00001))
 			})
 			It("returns a valid outside temperature", func() {
-				Expect(parsed.GetOutsideTemperature()).To(Float64Equal(AirTemperatureKelvin, 0.00001))
+				Expect(parsed.GetOutsideTemperature()).To(BeNumerically("~", AirTemperatureKelvin, 0.00001))
 			})
 			It("returns a valid water temperature", func() {
-				Expect(parsed.GetWaterTemperature()).To(Float64Equal(WaterTemperatureKelvin, 0.00001))
+				Expect(parsed.GetWaterTemperature()).To(BeNumerically("~", WaterTemperatureKelvin, 0.00001))
 			})
 			It("returns a valid humidity", func() {
-				Expect(parsed.GetHumidity()).To(Float64Equal(RelativeHumidityRatio, 0.00001))
+				Expect(parsed.GetHumidity()).To(BeNumerically("~", RelativeHumidityRatio, 0.00001))
 			})
 			It("returns a valid dew point temperature", func() {
-				Expect(parsed.GetDewPointTemperature()).To(Float64Equal(DewPointKelvin, 0.00001))
+				Expect(parsed.GetDewPointTemperature()).To(BeNumerically("~", DewPointKelvin, 0.00001))
 			})
 			It("returns a valid true wind direction", func() {
-				Expect(parsed.GetTrueWindDirection()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueWindDirection()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic wind direction", func() {
-				Expect(parsed.GetMagneticWindDirection()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticWindDirection()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with pressure inches of mercury missing", func() {
@@ -103,7 +103,7 @@ var _ = Describe("MDA", func() {
 				parsed.BarometricPressureInInchesOfMercury = NewInvalidFloat64("")
 			})
 			It("returns a valid outside pressure", func() {
-				Expect(parsed.GetOutsidePressure()).To(Float64Equal(PressurePascal, 0.00001))
+				Expect(parsed.GetOutsidePressure()).To(BeNumerically("~", PressurePascal, 0.00001))
 			})
 		})
 		Context("when having a struct with pressure bar missing", func() {
@@ -111,7 +111,7 @@ var _ = Describe("MDA", func() {
 				parsed.BarometricPressureInBar = NewInvalidFloat64("")
 			})
 			It("returns a valid outside pressure", func() {
-				Expect(parsed.GetOutsidePressure()).To(Float64Equal(PressurePascal, 0.5))
+				Expect(parsed.GetOutsidePressure()).To(BeNumerically("~", PressurePascal, 0.5))
 			})
 		})
 		Context("when having a struct with wind speed in meters per second missing", func() {
@@ -119,7 +119,7 @@ var _ = Describe("MDA", func() {
 				parsed.WindSpeedInMetersPerSecond = NewInvalidFloat64("")
 			})
 			It("returns a valid outside pressure", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing data", func() {

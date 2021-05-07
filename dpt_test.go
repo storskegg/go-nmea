@@ -73,10 +73,10 @@ var _ = Describe("DPT", func() {
 				parsed.Offset = NewFloat64(DepthTransducerMeters)
 			})
 			It("returns a valid depth below transducer", func() {
-				Expect(parsed.GetDepthBelowTransducer()).To(Float64Equal(DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
+				Expect(parsed.GetDepthBelowTransducer()).To(BeNumerically("~", DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
 			})
 			It("returns a valid depth below surface", func() {
-				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+				Expect(parsed.GetDepthBelowSurface()).To(BeNumerically("~", DepthBelowSurfaceMeters, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDepthBelowKeel()
@@ -88,14 +88,14 @@ var _ = Describe("DPT", func() {
 				parsed.Offset = NewFloat64(DepthTransducerMeters - DepthKeelMeters)
 			})
 			It("returns a valid depth below transducer", func() {
-				Expect(parsed.GetDepthBelowTransducer()).To(Float64Equal(DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
+				Expect(parsed.GetDepthBelowTransducer()).To(BeNumerically("~", DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDepthBelowSurface()
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid depth below keel", func() {
-				Expect(parsed.GetDepthBelowKeel()).To(Float64Equal(DepthBelowSurfaceMeters-DepthKeelMeters, 0.00001))
+				Expect(parsed.GetDepthBelowKeel()).To(BeNumerically("~", DepthBelowSurfaceMeters-DepthKeelMeters, 0.00001))
 			})
 		})
 		Context("When having a parsed sentence and no offset", func() {
@@ -103,7 +103,7 @@ var _ = Describe("DPT", func() {
 				parsed.Offset = NewInvalidFloat64("")
 			})
 			It("returns a valid depth below transducer", func() {
-				Expect(parsed.GetDepthBelowTransducer()).To(Float64Equal(DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
+				Expect(parsed.GetDepthBelowTransducer()).To(BeNumerically("~", DepthBelowSurfaceMeters-DepthTransducerMeters, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDepthBelowSurface()

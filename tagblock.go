@@ -24,6 +24,19 @@ func NewInvalidTagblock(reason string) TagBlock {
 	}
 }
 
+func NewTagblock() TagBlock {
+	return TagBlock{
+		Valid:        true,
+		Time:         NewInvalidInt64("not specified"),
+		RelativeTime: NewInvalidInt64("not specified"),
+		Destination:  NewInvalidString("not specified"),
+		Grouping:     NewInvalidString("not specified"),
+		LineCount:    NewInvalidInt64("not specified"),
+		Source:       NewInvalidString("not specified"),
+		Text:         NewInvalidString("not specified"),
+	}
+}
+
 // parseTagBlock adds support for tagblocks
 // https://gpsd.gitlab.io/gpsd/AIVDM.html#_nmea_tag_blocks
 func parseTagBlock(tags string) TagBlock {
@@ -36,7 +49,7 @@ func parseTagBlock(tags string) TagBlock {
 		fieldsRaw   = tags[0:sumSepIndex]
 		checksumRaw = strings.ToUpper(tags[sumSepIndex+1:])
 		checksum    = Checksum(fieldsRaw)
-		tagBlock    TagBlock
+		tagBlock    = NewTagblock()
 	)
 
 	// Validate the checksum

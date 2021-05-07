@@ -86,7 +86,7 @@ var _ = Describe("HDT", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 		})
 		Context("when having a struct with missing heading", func() {

@@ -69,7 +69,7 @@ var _ = Describe("HEV", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid heave", func() {
-				Expect(parsed.GetHeave()).To(Float64Equal(HeaveMeters, 0.00001))
+				Expect(parsed.GetHeave()).To(BeNumerically("~", HeaveMeters, 0.00001))
 			})
 		})
 		Context("when having a struct with missing heave", func() {

@@ -60,7 +60,7 @@ var _ = Describe("DBS", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid depth below surface", func() {
-				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+				Expect(parsed.GetDepthBelowSurface()).To(BeNumerically("~", DepthBelowSurfaceMeters, 0.00001))
 			})
 		})
 		Context("when having a struct with only depth in feet set", func() {
@@ -69,7 +69,7 @@ var _ = Describe("DBS", func() {
 				parsed.DepthFathoms = NewInvalidFloat64("")
 			})
 			It("returns a valid depth below surface", func() {
-				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+				Expect(parsed.GetDepthBelowSurface()).To(BeNumerically("~", DepthBelowSurfaceMeters, 0.00001))
 			})
 		})
 		Context("when having a struct with only depth in fathoms set", func() {
@@ -78,7 +78,7 @@ var _ = Describe("DBS", func() {
 				parsed.DepthMeters = NewInvalidFloat64("")
 			})
 			It("returns a valid depth below surface", func() {
-				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+				Expect(parsed.GetDepthBelowSurface()).To(BeNumerically("~", DepthBelowSurfaceMeters, 0.00001))
 			})
 		})
 		Context("when having a struct with only depth in meters set", func() {
@@ -87,7 +87,7 @@ var _ = Describe("DBS", func() {
 				parsed.DepthFathoms = NewInvalidFloat64("")
 			})
 			It("returns a valid depth below surface", func() {
-				Expect(parsed.GetDepthBelowSurface()).To(Float64Equal(DepthBelowSurfaceMeters, 0.00001))
+				Expect(parsed.GetDepthBelowSurface()).To(BeNumerically("~", DepthBelowSurfaceMeters, 0.00001))
 			})
 		})
 		Context("when having a struct with missing depth values", func() {

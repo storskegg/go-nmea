@@ -62,13 +62,13 @@ var _ = Describe("MWD", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid true wind direction", func() {
-				Expect(parsed.GetTrueWindDirection()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueWindDirection()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic wind direction", func() {
-				Expect(parsed.GetMagneticWindDirection()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticWindDirection()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct is missing wind speed in meters per second", func() {
@@ -76,13 +76,13 @@ var _ = Describe("MWD", func() {
 				parsed.WindSpeedInMetersPerSecond = NewInvalidFloat64("")
 			})
 			It("returns a valid true wind direction", func() {
-				Expect(parsed.GetTrueWindDirection()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueWindDirection()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic wind direction", func() {
-				Expect(parsed.GetMagneticWindDirection()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticWindDirection()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct is missing wind speed in knots", func() {
@@ -90,13 +90,13 @@ var _ = Describe("MWD", func() {
 				parsed.WindSpeedInKnots = NewInvalidFloat64("")
 			})
 			It("returns a valid true wind direction", func() {
-				Expect(parsed.GetTrueWindDirection()).To(Float64Equal(TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetTrueWindDirection()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
 			})
 			It("returns a valid magnetic wind direction", func() {
-				Expect(parsed.GetMagneticWindDirection()).To(Float64Equal(MagneticDirectionRadians, 0.00001))
+				Expect(parsed.GetMagneticWindDirection()).To(BeNumerically("~", MagneticDirectionRadians, 0.00001))
 			})
 			It("returns a valid wind speed", func() {
-				Expect(parsed.GetWindSpeed()).To(Float64Equal(SpeedOverGroundMPS, 0.00001))
+				Expect(parsed.GetWindSpeed()).To(BeNumerically("~", SpeedOverGroundMPS, 0.00001))
 			})
 		})
 		Context("when having a struct with missing data", func() {
