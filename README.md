@@ -1,6 +1,7 @@
 # go-nmea
 
 [![Build Status](https://github.com/munnik/go-nmea/actions/workflows/go.yml/badge.svg)](https://github.com/munnik/go-nmea/actions/workflows/go.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/munnik/go-nmea)](https://goreportcard.com/report/github.com/munnik/go-nmea) 
+
 This is a NMEA library for the Go programming language (Golang).
 
 ## Features
