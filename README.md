@@ -1,6 +1,6 @@
 # go-nmea
 
-[![Build Status](https://travis-ci.com/adrianmo/go-nmea.svg?branch=master)](https://travis-ci.com/adrianmo/go-nmea) [![Go Report Card](https://goreportcard.com/badge/github.com/adrianmo/go-nmea)](https://goreportcard.com/report/github.com/adrianmo/go-nmea) [![Coverage Status](https://coveralls.io/repos/adrianmo/go-nmea/badge.svg?branch=master&service=github)](https://coveralls.io/github/adrianmo/go-nmea?branch=master) [![GoDoc](https://godoc.org/github.com/adrianmo/go-nmea?status.svg)](https://godoc.org/github.com/adrianmo/go-nmea)
+[![Build Status](https://github.com/munnik/go-nmea/actions/workflows/go.yml/badge.svg)](https://github.com/munnik/go-nmea/actions/workflows/go.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/munnik/go-nmea)](https://goreportcard.com/report/github.com/munnik/go-nmea) [![Coverage Status](https://coveralls.io/repos/github/munnik/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/munnik/go-nmea?branch=master)
 
 This is a NMEA library for the Go programming language (Golang).
 
