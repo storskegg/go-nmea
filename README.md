@@ -6,8 +6,8 @@ This is a fork of the https://github.com/adrianmo/go-nmea repository.
 
 ## Features
 
-- All the futures of the forked repository
-- All types (structs) have a Valid and InvalidReason property
+- All the futures of https://github.com/adrianmo/go-nmea
+- All types (structs) have a `Valid` and `InvalidReason` property
 - Supports additional nmea0183 sentences (GST, HEV, MDA, MWD, MWV, ROT, VWR)
 - Implement SignalK interface
 - Moved to Ginkgo tests
