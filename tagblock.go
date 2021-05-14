@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// TagBlock struct
+// TagBlock type
 type TagBlock struct {
 	Valid         bool
 	InvalidReason string
@@ -18,12 +18,14 @@ type TagBlock struct {
 	Text          String // TypeTextString valid character string, parameter -t
 }
 
+// NewInvalidTagblock creates an invalid TagBlock
 func NewInvalidTagblock(reason string) TagBlock {
 	return TagBlock{
 		InvalidReason: reason,
 	}
 }
 
+// NewTagblock creates a valid TagBlock
 func NewTagblock() TagBlock {
 	return TagBlock{
 		Valid:        true,

@@ -55,7 +55,7 @@ func newGGA(s BaseSentence) (GGA, error) {
 	}, p.Err()
 }
 
-// GetNumberOfSatellites retrieves the number of satelites from the sentence
+// GetNumberOfSatellites retrieves the number of satellites from the sentence
 func (s GGA) GetNumberOfSatellites() (int64, error) {
 	if v, err := s.NumSatellites.GetValue(); err == nil {
 		return v, nil

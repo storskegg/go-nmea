@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// TypeMWD type for MWD sentences
 	TypeMWD = "MWD"
 )
 
@@ -20,6 +21,7 @@ const (
 // 7    Wind speed, meters/second, to the nearest 0.1 m/s.
 // 8    M: Meters/second
 
+// MWD - Wind Direction & Speed
 type MWD struct {
 	BaseSentence
 	WindDirectionTrue          Float64

@@ -42,9 +42,9 @@ type FixType interface {
 	GetFixType() (string, error)
 }
 
-// NumberOfSatelites retrieves the number of satelites from the sentence
-type NumberOfSatelites interface {
-	GetNumberOfSatelites() (int64, error)
+// NumberOfSatellites retrieves the number of satellites from the sentence
+type NumberOfSatellites interface {
+	GetNumberOfSatellites() (int64, error)
 }
 
 // Position2D retrieves the 2D position from the sentence
@@ -72,7 +72,7 @@ type DepthBelowSurface interface {
 	GetDepthBelowSurface() (float64, error)
 }
 
-// DepthBelowSurface retrieves the depth below surface from the sentence
+// DepthBelowKeel retrieves the depth below keel from the sentence
 type DepthBelowKeel interface {
 	GetDepthBelowKeel() (float64, error)
 }

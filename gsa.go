@@ -51,7 +51,7 @@ func newGSA(s BaseSentence) (GSA, error) {
 	return m, p.Err()
 }
 
-// GetNumberOfSatellites retrieves the number of satelites from the sentence
+// GetNumberOfSatellites retrieves the number of satellites from the sentence
 func (s GSA) GetNumberOfSatellites() (int64, error) {
 	return int64(len(s.SV)), nil
 }

@@ -1,6 +1,7 @@
 package nmea
 
 const (
+	// TypeGST type for GST sentences
 	TypeGST = "GST"
 )
 
@@ -14,6 +15,7 @@ const (
 // 7 	Longitude 1 sigma error, in meters
 // 8 	Height 1 sigma error, in meters
 
+// GST - Position error statistics
 type GST struct {
 	BaseSentence
 	Time                                 Time

@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// TypeROT type for ROT sentences
 	TypeROT = "ROT"
 
 	ValidROT   = "A"
@@ -18,6 +19,7 @@ const (
 //			A: Valid data
 // 			V: Invalid data
 
+// ROT - Rate of turn
 type ROT struct {
 	BaseSentence
 	RateOfTurn Float64 // Rate of turn

@@ -29,7 +29,7 @@ var navigationStatuses []string = []string{
 	"motoring",
 	"anchored",
 	"not under command",
-	"restricted manouverability",
+	"restricted maneuverability",
 	"constrained by draft",
 	"moored",
 	"aground",
@@ -385,6 +385,7 @@ func (s VDMVDO) GetSpeedOverGround() (float64, error) {
 	return 0, fmt.Errorf("value is unavailable")
 }
 
+// GetDestination retrieves the destination from the sentence
 func (s VDMVDO) GetDestination() (string, error) {
 	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		return shipStaticData.Destination, nil
@@ -392,6 +393,7 @@ func (s VDMVDO) GetDestination() (string, error) {
 	return "", fmt.Errorf("value is unavailable")
 }
 
+// GetETA retrieves the estimated time of arrival from the sentence
 func (s VDMVDO) GetETA() (time.Time, error) {
 	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		result := time.Date(

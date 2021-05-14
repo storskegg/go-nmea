@@ -123,7 +123,7 @@ var _ = Describe("Sentence", func() {
 		})
 		Context("when a standard sentence is given with a valid TAG block", func() {
 			It("returns a valid value", func() {
-				result, err := Parse("\\s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				result, err := Parse("\\s:Satellite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
 				Expect(result).ToNot(BeNil())
 				Expect(err).ToNot(HaveOccurred())
 			})
@@ -142,7 +142,7 @@ var _ = Describe("Sentence", func() {
 				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
 			})
 		})
-		Context("when a standard sentence is given without a checksum seperator", func() {
+		Context("when a standard sentence is given without a checksum separator", func() {
 			It("returns an error", func() {
 				result, err := Parse("$GPRMC,001225,A,2832.1834,N,08101.0536,W,12,25,251211,1.2,E,A")
 				Expect(result).To(BeNil())
@@ -158,14 +158,14 @@ var _ = Describe("Sentence", func() {
 		})
 		Context("when a standard sentence is given without a TAG Block start delimiter", func() {
 			It("returns an error", func() {
-				result, err := Parse("s:Satelite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				result, err := Parse("s:Satellite_1,c:1553390539*62\\!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
 				Expect(result).To(BeNil())
 				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
 			})
 		})
 		Context("when a standard sentence is given without a TAG Block end delimiter", func() {
 			It("returns an error", func() {
-				result, err := Parse("\\s:Satelite_1,c:1553390539*62!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
+				result, err := Parse("\\s:Satellite_1,c:1553390539*62!AIVDM,1,1,,A,13M@ah0025QdPDTCOl`K6`nV00Sv,0*52")
 				Expect(result).To(BeNil())
 				Expect(err).To(MatchError("nmea: sentence does not start with a '$' or '!'"))
 			})

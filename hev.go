@@ -7,6 +7,7 @@ const (
 	TypeHEV = "HEV"
 )
 
+// HEV - Heave
 type HEV struct {
 	BaseSentence
 	Heave Float64 // Heave in meters

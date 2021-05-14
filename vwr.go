@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// TypeVWR type for VWR sentences
 	TypeVWR = "VWR"
 
 	LeftOfBow  = "L"
@@ -23,6 +24,7 @@ const (
 // 7    Wind speed, km/h, to the nearest km/h
 // 8    K: km/h
 
+// VWR - Relative (Apparent) Wind Speed and Angle
 type VWR struct {
 	BaseSentence
 	Angle                        Float64

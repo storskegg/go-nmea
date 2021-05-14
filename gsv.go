@@ -49,7 +49,7 @@ func newGSV(s BaseSentence) (GSV, error) {
 	return m, p.Err()
 }
 
-// GetNumberOfSatelites retrieves the number of satelites from the sentence
+// GetNumberOfSatellites retrieves the number of satellites from the sentence
 func (s GSV) GetNumberOfSatellites() (int64, error) {
 	if v, err := s.NumberSVsInView.GetValue(); err == nil {
 		return v, nil

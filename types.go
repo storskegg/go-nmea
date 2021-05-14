@@ -183,6 +183,15 @@ type Time struct {
 	Millisecond   int
 }
 
+// NewInvalidTime creates an invalid Time
+func NewInvalidTime(reason string) Time {
+	return Time{
+		Valid:         false,
+		InvalidReason: reason,
+	}
+}
+
+// NewTime creates a valid Time
 func NewTime(hour int, minute int, second int, millisecond int) Time {
 	return Time{
 		Valid:       true,
@@ -190,13 +199,6 @@ func NewTime(hour int, minute int, second int, millisecond int) Time {
 		Minute:      minute,
 		Second:      second,
 		Millisecond: millisecond,
-	}
-}
-
-func NewInvalidTime(reason string) Time {
-	return Time{
-		Valid:         false,
-		InvalidReason: reason,
 	}
 }
 
@@ -232,6 +234,15 @@ type Date struct {
 	YY            int
 }
 
+// NewInvalidDate creates an invalid Date
+func NewInvalidDate(reason string) Date {
+	return Date{
+		Valid:         false,
+		InvalidReason: reason,
+	}
+}
+
+// NewDate creates a valid Date
 func NewDate(year int, month int, day int) Date {
 	return Date{
 		Valid: true,
@@ -241,14 +252,7 @@ func NewDate(year int, month int, day int) Date {
 	}
 }
 
-func NewInvalidDate(reason string) Date {
-	return Date{
-		Valid:         false,
-		InvalidReason: reason,
-	}
-}
-
-// String representation of date
+// String representation of Date
 func (d Date) String() string {
 	return fmt.Sprintf("%02d/%02d/%02d", d.DD, d.MM, d.YY)
 }
@@ -283,12 +287,21 @@ func LonDir(l float64) string {
 	return West
 }
 
+// Float64 type
 type Float64 struct {
 	Valid         bool
 	InvalidReason string
 	Value         float64
 }
 
+// NewInvalidFloat64 creates an invalid Float64
+func NewInvalidFloat64(reason string) Float64 {
+	return Float64{
+		InvalidReason: reason,
+	}
+}
+
+// NewFloat64 creates a valid Float64
 func NewFloat64(v float64) Float64 {
 	return Float64{
 		Valid: true,
@@ -296,12 +309,7 @@ func NewFloat64(v float64) Float64 {
 	}
 }
 
-func NewInvalidFloat64(reason string) Float64 {
-	return Float64{
-		InvalidReason: reason,
-	}
-}
-
+// GetValue returns the float64 value or an error if valid is false
 func (v Float64) GetValue() (float64, error) {
 	if v.Valid {
 		return v.Value, nil
@@ -309,6 +317,7 @@ func (v Float64) GetValue() (float64, error) {
 	return 0, errors.New(v.InvalidReason)
 }
 
+// ParseFloat64 parses a string and creates a Float64, if the string can't be parsed an invalid Float64 is returned
 func ParseFloat64(s string) Float64 {
 	v, err := strconv.ParseFloat(s, 64)
 	if err != nil {
@@ -317,24 +326,29 @@ func ParseFloat64(s string) Float64 {
 	return NewFloat64(v)
 }
 
+// Int64 type
 type Int64 struct {
 	Valid         bool
 	InvalidReason string
 	Value         int64
 }
 
-func NewInt64(v int64) Int64 {
-	return Int64{
-		Valid: true,
-		Value: v,
-	}
-}
+// NewInvalidInt64 creates an invalid Int64
 func NewInvalidInt64(reason string) Int64 {
 	return Int64{
 		InvalidReason: reason,
 	}
 }
 
+// NewInt64 creates a valid Int64
+func NewInt64(v int64) Int64 {
+	return Int64{
+		Valid: true,
+		Value: v,
+	}
+}
+
+// GetValue returns the int64 value or an error if valid is false
 func (v Int64) GetValue() (int64, error) {
 	if v.Valid {
 		return v.Value, nil
@@ -342,6 +356,7 @@ func (v Int64) GetValue() (int64, error) {
 	return 0, errors.New(v.InvalidReason)
 }
 
+// ParseInt64 parses a string and creates a Int64, if the string can't be parsed an invalid Int64 is returned
 func ParseInt64(s string) Int64 {
 	v, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
@@ -350,12 +365,21 @@ func ParseInt64(s string) Int64 {
 	return NewInt64(v)
 }
 
+// String type
 type String struct {
 	Valid         bool
 	InvalidReason string
 	Value         string
 }
 
+// NewInvalidString creates an invalid String
+func NewInvalidString(reason string) String {
+	return String{
+		InvalidReason: reason,
+	}
+}
+
+// NewString creates a valid String
 func NewString(v string) String {
 	return String{
 		Valid: true,
@@ -363,34 +387,32 @@ func NewString(v string) String {
 	}
 }
 
-func NewInvalidString(reason string) String {
-	return String{
-		InvalidReason: reason,
-	}
-}
-
+// GetValue returns the string value or an error if valid is false
 func (v String) GetValue() (string, error) {
 	if v.Valid {
 		return v.Value, nil
 	}
-	return "", fmt.Errorf("the value is invalid")
+	return "", errors.New(v.InvalidReason)
 }
 
+// StringList type
 type StringList struct {
 	Valid         bool
 	InvalidReason string
 	Values        []String
 }
 
+// NewInvalidStringList creates an invalid StringList
+func NewInvalidStringList(reason string) StringList {
+	return StringList{
+		InvalidReason: reason,
+	}
+}
+
+// NewStringList creates a valid StringList
 func NewStringList(v []String) StringList {
 	return StringList{
 		Valid:  true,
 		Values: v,
-	}
-}
-
-func NewInvalidStringList(reason string) StringList {
-	return StringList{
-		InvalidReason: reason,
 	}
 }

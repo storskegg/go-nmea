@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// TypeMWV type for MWV sentences
 	TypeMWV = "MWV"
 
 	ReferenceRelative = "R"
@@ -36,6 +37,7 @@ const (
 //			A: data valid
 //			V: data invalid
 
+// MWV - Wind Speed and Angle
 type MWV struct {
 	BaseSentence
 	Angle         Float64

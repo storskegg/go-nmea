@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// TypeMDA type for MDA sentences
 	TypeMDA = "MDA"
 )
 
@@ -32,6 +33,7 @@ const (
 // 19   Wind speed, meters per second, to the nearest 0.1 m/s
 // 20   M = meters per second
 
+// MDA - Meteorological Composite
 type MDA struct {
 	BaseSentence
 	BarometricPressureInInchesOfMercury Float64
@@ -101,7 +103,7 @@ func (s MDA) GetOutsideTemperature() (float64, error) {
 	return 0, fmt.Errorf("value is unavailable")
 }
 
-// GetOutsideTemperature retrieves the outside air temperature from the sentence
+// GetWaterTemperature retrieves the outside air temperature from the sentence
 func (s MDA) GetWaterTemperature() (float64, error) {
 	if v, err := s.WaterTemperature.GetValue(); err == nil {
 		return unit.FromCelsius(v).Kelvin(), nil
