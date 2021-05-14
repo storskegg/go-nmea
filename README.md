@@ -1,13 +1,13 @@
 # go-nmea
 
-[![Build Status](https://github.com/munnik/go-nmea/actions/workflows/go.yml/badge.svg)](https://github.com/munnik/go-nmea/actions/workflows/go.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/munnik/go-nmea)](https://goreportcard.com/report/github.com/munnik/go-nmea) [![Coverage Status](https://coveralls.io/repos/github/munnik/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/munnik/go-nmea?branch=master)
+[![Build Status](https://github.com/munnik/go-nmea/actions/workflows/go.yml/badge.svg)](https://github.com/munnik/go-nmea/actions/workflows/go.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/munnik/go-nmea)](https://goreportcard.com/report/github.com/munnik/go-nmea) [![Coverage Status](https://coveralls.io/repos/github/munnik/go-nmea/badge.svg?branch=master)](https://coveralls.io/github/munnik/go-nmea?branch=master) ![GitHub](https://img.shields.io/github/license/munnik/go-nmea)
 
 This is a fork of the https://github.com/adrianmo/go-nmea repository.
 
 ## Features
 
-- All the futures of the forked repository
-- All types (structs) have a Valid and InvalidReason property
+- All the futures of https://github.com/adrianmo/go-nmea
+- All types (structs) have a `Valid` and `InvalidReason` property
 - Supports additional nmea0183 sentences (GST, HEV, MDA, MWD, MWV, ROT, VWR)
 - Implement SignalK interface
 - Moved to Ginkgo tests
