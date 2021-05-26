@@ -181,7 +181,7 @@ var _ = Describe("VDMVDO", func() {
 				}
 			})
 			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal(uint32(244780755)))
+				Expect(parsed.GetMMSI()).To(Equal("244780755"))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetCallSign()
@@ -245,7 +245,7 @@ var _ = Describe("VDMVDO", func() {
 				}
 			})
 			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal(uint32(265547250)))
+				Expect(parsed.GetMMSI()).To(Equal("265547250"))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetCallSign()
@@ -308,7 +308,7 @@ var _ = Describe("VDMVDO", func() {
 				}
 			})
 			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal(uint32(244660797)))
+				Expect(parsed.GetMMSI()).To(Equal("244660797"))
 			})
 			It("returns a valid call sign", func() {
 				Expect(parsed.GetCallSign()).To(Equal("PD8176"))
@@ -400,7 +400,7 @@ var _ = Describe("VDMVDO", func() {
 				}
 			})
 			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal(uint32(244660797)))
+				Expect(parsed.GetMMSI()).To(Equal("244660797"))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetCallSign()
