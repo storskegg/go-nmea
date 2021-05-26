@@ -150,7 +150,7 @@ type IMONumber interface {
 
 // MMSI retrieves the MMSI of the vessel from the sentence
 type MMSI interface {
-	GetMMSI() (uint32, error)
+	GetMMSI() (string, error)
 }
 
 // NavigationStatus retrieves the navigation status from the sentence
