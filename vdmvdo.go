@@ -191,6 +191,10 @@ func newVDMVDO(s BaseSentence) (VDMVDO, error) {
 }
 
 func extractNumber(binaryData []byte, offset int, length int) (uint64, error) {
+	if offset < 0 || length < 1 || offset+length >= len(binaryData) {
+		return 0, fmt.Errorf("index out of bounds, length of binary data: %d, offset: %d, length: %d", len(binaryData), offset, length)
+	}
+
 	var result uint64 = 0
 
 	for _, value := range binaryData[offset : offset+length] {
@@ -202,6 +206,10 @@ func extractNumber(binaryData []byte, offset int, length int) (uint64, error) {
 }
 
 func extractString(binaryData []byte, offset int, length int) (string, error) {
+	if offset < 0 || length < 1 || offset+length >= len(binaryData) {
+		return "", fmt.Errorf("index out of bounds, length of binary data: %d, offset: %d, length: %d", len(binaryData), offset, length)
+	}
+
 	if (length)%6 != 0 {
 		return "", errors.New("length must be divisible by 6")
 	}
