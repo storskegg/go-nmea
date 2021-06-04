@@ -286,6 +286,8 @@ func (s VDMVDO) GetVesselBeam() (float64, error) {
 	}
 	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		return float64(shipStaticData.Dimension.C + shipStaticData.Dimension.D), nil
+	} else if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok {
+		return float64(positionReport.Dimension.C + positionReport.Dimension.D), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -301,6 +303,8 @@ func (s VDMVDO) GetVesselLength() (float64, error) {
 	}
 	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		return float64(shipStaticData.Dimension.A + shipStaticData.Dimension.B), nil
+	} else if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok {
+		return float64(positionReport.Dimension.A + positionReport.Dimension.B), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -313,6 +317,9 @@ func (s VDMVDO) GetVesselName() (string, error) {
 	if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		return shipStaticData.Name, nil
 	}
+	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
+		return positionReport.Name, nil
+	}
 	return "", fmt.Errorf("value is unavailable")
 }
 
@@ -323,6 +330,8 @@ func (s VDMVDO) GetVesselType() (string, error) {
 		vesselTypeIndex = int(staticDataReport.ReportB.ShipType)
 	} else if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
 		vesselTypeIndex = int(shipStaticData.Type)
+	} else if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok {
+		vesselTypeIndex = int(positionReport.Type)
 	}
 	if vesselTypeIndex >= 0 && vesselTypeIndex < len(vesselTypes) {
 		return vesselTypes[vesselTypeIndex], nil
@@ -363,12 +372,36 @@ func (s VDMVDO) GetTrueCourseOverGround() (float64, error) {
 		}
 		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
 	}
+	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
+		if positionReport.Cog == 360 {
+			return 0, fmt.Errorf("value is unavailable")
+		}
+		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
+	}
+	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
+		if positionReport.Cog == 360 {
+			return 0, fmt.Errorf("value is unavailable")
+		}
+		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
+	}
 	return 0, fmt.Errorf("value is unavailable")
 }
 
 // GetTrueHeading retrieves the true heading from the sentence
 func (s VDMVDO) GetTrueHeading() (float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
+		if positionReport.TrueHeading == 511 {
+			return 0, fmt.Errorf("value is unavailable")
+		}
+		return (unit.Angle(positionReport.TrueHeading) * unit.Degree).Radians(), nil
+	}
+	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
+		if positionReport.TrueHeading == 511 {
+			return 0, fmt.Errorf("value is unavailable")
+		}
+		return (unit.Angle(positionReport.TrueHeading) * unit.Degree).Radians(), nil
+	}
+	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
 		if positionReport.TrueHeading == 511 {
 			return 0, fmt.Errorf("value is unavailable")
 		}
@@ -382,12 +415,24 @@ func (s VDMVDO) GetPosition2D() (float64, float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
 		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
 	}
+	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
+		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+	}
+	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
+		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+	}
 	return 0, 0, fmt.Errorf("value is unavailable")
 }
 
 // GetSpeedOverGround retrieves the speed over ground from the sentence
 func (s VDMVDO) GetSpeedOverGround() (float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
+		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+	}
+	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
+		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+	}
+	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
 		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
