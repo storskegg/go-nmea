@@ -385,7 +385,7 @@ var _ = Describe("VDMVDO", func() {
 						},
 						Valid:                     true,
 						NavigationalStatus:        0,
-						RateOfTurn:                int8(-40),
+						RateOfTurn:                int16(-40),
 						Sog:                       ais.Field10(SpeedOverGroundKnots),
 						PositionAccuracy:          false,
 						Longitude:                 ais.FieldLatLonFine(Longitude),
