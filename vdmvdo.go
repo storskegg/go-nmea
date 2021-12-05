@@ -18,10 +18,10 @@ const (
 	// TypeVDO type for VDO sentences
 	TypeVDO = "VDO"
 
-	rateOfTurnNotAvailable             int8    = -128
-	rateOfTurnMaxRightDegreesPerMinute int8    = 127
+	rateOfTurnNotAvailable             int16   = -128
+	rateOfTurnMaxRightDegreesPerMinute int16   = 127
 	rateOfTurnMaxRightRadiansPerSecond float64 = 0.0206
-	rateOfTurnMaxLeftDegreesPerMinute  int8    = -rateOfTurnMaxRightDegreesPerMinute
+	rateOfTurnMaxLeftDegreesPerMinute  int16   = -rateOfTurnMaxRightDegreesPerMinute
 	rateOfTurnMaxLeftRadiansPerSecond  float64 = -rateOfTurnMaxRightRadiansPerSecond
 )
 
