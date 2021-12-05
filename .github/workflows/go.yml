@@ -2,43 +2,41 @@ name: Go
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
 
-    - name: Build
-      run: go build -v ./...
-      
-    - name: Get Ginkgo
-      run: go get github.com/onsi/ginkgo/ginkgo
-      
-    - name: Get Gomega
-      run: go get github.com/onsi/gomega/...      
+      - name: Build
+        run: go build -v ./...
 
-    - name: Test
-      run:  ginkgo -r -race -cover 
-      
-    - name: Convert coverage to lcov
-      uses: jandelgado/gcov2lcov-action@v1.0.2
-      with:
+      - name: Get Ginkgo
+        run: go get github.com/onsi/ginkgo/ginkgo
+
+      - name: Get Gomega
+        run: go get github.com/onsi/gomega/...
+
+      - name: Test
+        run: ginkgo -r -race -cover
+
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.2
+        with:
           infile: go-nmea.coverprofile
           outfile: coverage.lcov
-           
-        
-    - name: Coveralls
-      uses: coverallsapp/github-action@v1.0.1
-      with:
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v1.0.1
+        with:
           github-token: ${{ secrets.github_token }}
           path-to-lcov: coverage.lcov
