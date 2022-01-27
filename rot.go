@@ -41,7 +41,7 @@ func newROT(s BaseSentence) (ROT, error) {
 // GetRateOfTurn retrieves the rate of turn from the sentence
 func (s ROT) GetRateOfTurn() (float64, error) {
 	if v, err := s.RateOfTurn.GetValue(); err == nil && s.Status.Value == ValidROT {
-		return (unit.Angle(v) * unit.Degree).Radians(), nil
+		return (unit.Angle(v) * unit.Degree).Radians() / 60, nil
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }

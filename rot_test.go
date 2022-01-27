@@ -100,7 +100,7 @@ var _ = Describe("ROT", func() {
 		})
 		Context("when having a complete struct", func() {
 			It("returns a valid rate of turn", func() {
-				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", TrueDirectionRadians, 0.00001))
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", TrueDirectionRadians/60, 0.00001))
 			})
 		})
 		Context("when having a struct with missing rate of turn", func() {
