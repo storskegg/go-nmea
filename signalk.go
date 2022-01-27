@@ -187,3 +187,10 @@ type Destination interface {
 type ETA interface {
 	GetETA() (time.Time, error)
 }
+
+// RudderAngle retrieves the rudder angle from the sentence
+type RudderAngle interface {
+	GetRudderAngle() (float64, error)
+	GetRudderAngleStarboard() (float64, error)
+	GetRudderAnglePortside() (float64, error)
+}
