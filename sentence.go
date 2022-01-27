@@ -217,6 +217,8 @@ func Parse(raw string) (Sentence, error) {
 			return newMWV(s)
 		case TypeROT:
 			return newROT(s)
+		case TypeRSA:
+			return newRSA(s)
 		case TypeVWR:
 			return newVWR(s)
 		case TypeGST:
