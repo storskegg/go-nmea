@@ -223,6 +223,8 @@ func Parse(raw string) (Sentence, error) {
 			return newVWR(s)
 		case TypeGST:
 			return newGST(s)
+		case TypeALR:
+			return newALR(s)
 		}
 	}
 	if strings.HasPrefix(s.Raw, SentenceStartEncapsulated) {
