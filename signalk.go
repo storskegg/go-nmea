@@ -194,3 +194,10 @@ type RudderAngle interface {
 	GetRudderAngleStarboard() (float64, error)
 	GetRudderAnglePortside() (float64, error)
 }
+
+// Alarm retrieves alarm information from the sentence
+type Alarm interface {
+	IsActive() (bool, error)
+	IsUnacknowledged() (bool, error)
+	GetDescription() (string, error)
+}
