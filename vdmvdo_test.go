@@ -300,6 +300,69 @@ var _ = Describe("VDMVDO", func() {
 				Expect(err).To(HaveOccurred())
 			})
 		})
+		Context("when having another scheduled position report", func() {
+			BeforeEach(func() {
+				raws = []string{
+					"!AIVDM,1,1,,A,13aHE1PPOwPGJSJMiB8N4;=4P<23,0*7E",
+				}
+			})
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal("244716806"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetCallSign()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetENINumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetIMONumber()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid navigation status", func() {
+				Expect(parsed.GetNavigationStatus()).To(Equal("motoring"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselBeam()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselLength()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselName()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetVesselType()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid rate of turn", func() {
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.2120575, 0.0001))
+			})
+			It("returns a valid course over ground", func() {
+				_, err := parsed.GetTrueCourseOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+			It("returns a valid true heading", func() {
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 6.248279, 0.00001))
+			})
+			It("returns a valid position", func() {
+				lat, lon, _ := parsed.GetPosition2D()
+				Expect(lat).To(BeNumerically("~", 52.026935, 0.00001))
+				Expect(lon).To(BeNumerically("~", 5.11506166666667, 0.00001))
+			})
+			It("returns a valid speed over ground", func() {
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 52.6276212, 0.00001))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetDestination()
+				Expect(err).To(HaveOccurred())
+			})
+		})
 		Context("when having a ship static and voyage related data report", func() {
 			BeforeEach(func() {
 				raws = []string{
