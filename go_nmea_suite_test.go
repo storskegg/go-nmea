@@ -38,26 +38,26 @@ const (
 	DepthBelowSurfaceFeet    = float64(12.79528)
 	DepthBelowSurfaceFathoms = float64(2.1325459)
 
-	DepthTransducerMeters   = float64(1.8)
-	DepthTransducerFeet     = float64(5.905512)
-	DepthTransducerFanthoms = float64(0.98425197)
+	DepthTransducerMeters  = float64(1.8)
+	DepthTransducerFeet    = float64(5.905512)
+	DepthTransducerFathoms = float64(0.98425197)
 
-	DepthKeelMeters   = float64(1.95)
-	DepthKeelFeet     = float64(6.397638)
-	DepthKeelFanthoms = float64(1.0662730)
+	DepthKeelMeters  = float64(1.95)
+	DepthKeelFeet    = float64(6.397638)
+	DepthKeelFathoms = float64(1.0662730)
 
 	PressurePascal          = 101600
 	PressureBar             = 1.016
 	PressureInchesOfMercury = 30.0026
 
 	AirTemperatureKelvin  = 290.65
-	AirTemperatureCelcius = 17.5
+	AirTemperatureCelsius = 17.5
 
 	WaterTemperatureKelvin  = 282.05
-	WaterTemperatureCelcius = 8.9
+	WaterTemperatureCelsius = 8.9
 
 	DewPointKelvin  = 280.35
-	DewPointCelcius = 7.2
+	DewPointCelsius = 7.2
 
 	RelativeHumidityPercentage = 55.6
 	RelativeHumidityRatio      = 0.556

@@ -62,10 +62,10 @@ var _ = Describe("MDA", func() {
 			parsed = MDA{
 				BarometricPressureInInchesOfMercury: NewFloat64(PressureInchesOfMercury),
 				BarometricPressureInBar:             NewFloat64(PressureBar),
-				AirTemperature:                      NewFloat64(AirTemperatureCelcius),
-				WaterTemperature:                    NewFloat64(WaterTemperatureCelcius),
+				AirTemperature:                      NewFloat64(AirTemperatureCelsius),
+				WaterTemperature:                    NewFloat64(WaterTemperatureCelsius),
 				RelativeHumidity:                    NewFloat64(RelativeHumidityPercentage),
-				DewPoint:                            NewFloat64(DewPointCelcius),
+				DewPoint:                            NewFloat64(DewPointCelsius),
 				WindDirectionTrue:                   NewFloat64(TrueDirectionDegrees),
 				WindDirectionMagnetic:               NewFloat64(MagneticDirectionDegrees),
 				WindSpeedInKnots:                    NewFloat64(SpeedOverGroundKnots),

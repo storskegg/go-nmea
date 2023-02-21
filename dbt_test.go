@@ -55,7 +55,7 @@ var _ = Describe("DBT", func() {
 			parsed = DBT{
 				DepthFeet:    NewFloat64(DepthBelowSurfaceFeet - DepthTransducerFeet),
 				DepthMeters:  NewFloat64(DepthBelowSurfaceMeters - DepthTransducerMeters),
-				DepthFathoms: NewFloat64(DepthBelowSurfaceFathoms - DepthTransducerFanthoms),
+				DepthFathoms: NewFloat64(DepthBelowSurfaceFathoms - DepthTransducerFathoms),
 			}
 		})
 		Context("when having a complete struct", func() {
