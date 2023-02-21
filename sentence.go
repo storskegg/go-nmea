@@ -65,13 +65,11 @@ func (s BaseSentence) TalkerID() string {
 func (s BaseSentence) String() string { return s.Raw }
 
 // parseSentence parses a raw message into it's fields
-func parseSentence(raw string) (BaseSentence, error) {
+func parseSentence(raw string, allowEmptyChecksum bool, allowChecksumMismatch bool) (BaseSentence, error) {
 	raw = strings.TrimSpace(raw)
 	tagBlockParts := strings.SplitN(raw, `\`, 3)
 
-	var (
-		tagBlock TagBlock
-	)
+	var tagBlock TagBlock
 	if len(tagBlockParts) == 3 {
 		tags := tagBlockParts[1]
 		raw = tagBlockParts[2]
@@ -93,9 +91,11 @@ func parseSentence(raw string) (BaseSentence, error) {
 		checksum    = Checksum(fieldsRaw)
 	)
 	// Validate the checksum
-	if checksum != checksumRaw {
-		return BaseSentence{}, fmt.Errorf(
-			"nmea: sentence checksum mismatch [%s != %s]", checksum, checksumRaw)
+	if needsChecksumCheck(checksumRaw, allowEmptyChecksum, allowChecksumMismatch) {
+		if checksum != checksumRaw {
+			return BaseSentence{}, fmt.Errorf(
+				"nmea: sentence checksum mismatch [%s != %s]", checksum, checksumRaw)
+		}
 	}
 	talker, typ := parsePrefix(fields[0])
 	return BaseSentence{
@@ -106,6 +106,16 @@ func parseSentence(raw string) (BaseSentence, error) {
 		Raw:      raw,
 		TagBlock: tagBlock,
 	}, nil
+}
+
+func needsChecksumCheck(checksum string, allowEmptyCheckSum bool, allowChecksumMismatch bool) bool {
+	if allowEmptyCheckSum == true && checksum == "" {
+		return false
+	}
+	if allowChecksumMismatch == true && checksum != "" {
+		return false
+	}
+	return true
 }
 
 // parsePrefix takes the first field and splits it into a talker id and data type.
@@ -153,8 +163,22 @@ func RegisterParser(sentenceType string, parser ParserFunc) error {
 }
 
 // Parse parses the given string into the correct sentence type.
-func Parse(raw string) (Sentence, error) {
-	s, err := parseSentence(raw)
+// options can be passed as string, supported options are:
+// * "AllowEmptyChecksum"
+// * "AllowChecksumMismatch"
+func Parse(raw string, options ...string) (Sentence, error) {
+	allowEmptyChecksum := false
+	allowChecksumMismatch := false
+	for _, option := range options {
+		if option == "AllowEmptyChecksum" {
+			allowEmptyChecksum = true
+		}
+		if option == "AllowChecksumMismatch" {
+			allowChecksumMismatch = true
+		}
+	}
+
+	s, err := parseSentence(raw, allowEmptyChecksum, allowChecksumMismatch)
 	if err != nil {
 		return nil, err
 	}
