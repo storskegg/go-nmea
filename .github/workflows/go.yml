@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      - name: Get Ginkgo
+      - name: Install Ginkgo
         run: go install github.com/onsi/ginkgo/v2/ginkgo
 
       - name: Get Gomega
@@ -30,13 +30,13 @@ jobs:
         run: ginkgo -r -race -cover
 
       - name: Convert coverage to lcov
-        uses: jandelgado/gcov2lcov-action@v1.0.2
+        uses: jandelgado/gcov2lcov-action@v1.0.9
         with:
-          infile: go-nmea.coverprofile
+          infile: coverprofile.out
           outfile: coverage.lcov
 
       - name: Coveralls
-        uses: coverallsapp/github-action@v1.0.1
+        uses: coverallsapp/github-action@1.1.3
         with:
           github-token: ${{ secrets.github_token }}
           path-to-lcov: coverage.lcov
