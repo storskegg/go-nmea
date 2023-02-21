@@ -303,11 +303,11 @@ var _ = Describe("VDMVDO", func() {
 		Context("when having another scheduled position report", func() {
 			BeforeEach(func() {
 				raws = []string{
-					"!AIVDM,1,1,,A,13aHE1PPOwPGJSJMiB8N4;=4P<23,0*7E",
+					"!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
 				}
 			})
 			It("returns a valid MMSI", func() {
-				Expect(parsed.GetMMSI()).To(Equal("244716806"))
+				Expect(parsed.GetMMSI()).To(Equal("477553000"))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetCallSign()
@@ -322,7 +322,7 @@ var _ = Describe("VDMVDO", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid navigation status", func() {
-				Expect(parsed.GetNavigationStatus()).To(Equal("motoring"))
+				Expect(parsed.GetNavigationStatus()).To(Equal("moored"))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetVesselBeam()
@@ -341,22 +341,21 @@ var _ = Describe("VDMVDO", func() {
 				Expect(err).To(HaveOccurred())
 			})
 			It("returns a valid rate of turn", func() {
-				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", -0.2120575, 0.0001))
+				Expect(parsed.GetRateOfTurn()).To(BeNumerically("~", 0, 0.0001))
 			})
 			It("returns a valid course over ground", func() {
-				_, err := parsed.GetTrueCourseOverGround()
-				Expect(err).To(HaveOccurred())
+				Expect(parsed.GetTrueCourseOverGround()).To(BeNumerically("~", 0.89011791852, 0.0001))
 			})
 			It("returns a valid true heading", func() {
-				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 6.248279, 0.00001))
+				Expect(parsed.GetTrueHeading()).To(BeNumerically("~", 3.159046, 0.00001))
 			})
 			It("returns a valid position", func() {
 				lat, lon, _ := parsed.GetPosition2D()
-				Expect(lat).To(BeNumerically("~", 52.026935, 0.00001))
-				Expect(lon).To(BeNumerically("~", 5.11506166666667, 0.00001))
+				Expect(lat).To(BeNumerically("~", 47.582833, 0.00001))
+				Expect(lon).To(BeNumerically("~", -122.345832, 0.00001))
 			})
 			It("returns a valid speed over ground", func() {
-				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 52.6276212, 0.00001))
+				Expect(parsed.GetSpeedOverGround()).To(BeNumerically("~", 0, 0.00001))
 			})
 			It("returns an error", func() {
 				_, err := parsed.GetDestination()
@@ -437,9 +436,7 @@ var _ = Describe("VDMVDO", func() {
 	})
 	Describe("Getting data from a VDMVDO struct", func() {
 		Context("with a position report", func() {
-			var (
-				parsed VDMVDO
-			)
+			var parsed VDMVDO
 			BeforeEach(func() {
 				parsed = VDMVDO{
 					Packet: ais.PositionReport{
