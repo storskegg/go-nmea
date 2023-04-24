@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/BertoldVdb/go-ais v0.1.0
-	github.com/martinlindhe/unit v0.0.0-20221119104754-49d25a6e149e
+	github.com/martinlindhe/unit v0.0.0-20230420213220-4adfd7d0a0d6
 	github.com/onsi/ginkgo/v2 v2.8.3
 	github.com/onsi/gomega v1.27.1
 )
