@@ -18,11 +18,12 @@ const (
 	// TypeVDO type for VDO sentences
 	TypeVDO = "VDO"
 
-	rateOfTurnNotAvailable             int16   = -128
-	rateOfTurnMaxRightDegreesPerMinute int16   = 127
-	rateOfTurnMaxRightRadiansPerSecond float64 = 0.0206
-	rateOfTurnMaxLeftDegreesPerMinute  int16   = -rateOfTurnMaxRightDegreesPerMinute
-	rateOfTurnMaxLeftRadiansPerSecond  float64 = -rateOfTurnMaxRightRadiansPerSecond
+	rateOfTurnNotAvailable             int16       = -128
+	rateOfTurnMaxRightDegreesPerMinute int16       = 127
+	rateOfTurnMaxRightRadiansPerSecond float64     = 0.0206
+	rateOfTurnMaxLeftDegreesPerMinute  int16       = -rateOfTurnMaxRightDegreesPerMinute
+	rateOfTurnMaxLeftRadiansPerSecond  float64     = -rateOfTurnMaxRightRadiansPerSecond
+	speedOverGroundNotAvailable        ais.Field10 = 102.3
 )
 
 var navigationStatuses []string = []string{
@@ -160,8 +161,10 @@ type VDMVDO struct {
 	ais.Packet
 }
 
-var nmeaCodec *aisnmea.NMEACodec
-var aisCodec *ais.Codec
+var (
+	nmeaCodec *aisnmea.NMEACodec
+	aisCodec  *ais.Codec
+)
 
 func init() {
 	aisCodec = ais.CodecNew(false, false)
@@ -325,7 +328,7 @@ func (s VDMVDO) GetVesselName() (string, error) {
 
 // GetVesselType retrieves the type of the vessel from the sentence
 func (s VDMVDO) GetVesselType() (string, error) {
-	var vesselTypeIndex = -1
+	vesselTypeIndex := -1
 	if staticDataReport, ok := s.Packet.(ais.StaticDataReport); ok && staticDataReport.Valid && staticDataReport.ReportB.Valid {
 		vesselTypeIndex = int(staticDataReport.ReportB.ShipType)
 	} else if shipStaticData, ok := s.Packet.(ais.ShipStaticData); ok && shipStaticData.Valid {
@@ -427,13 +430,19 @@ func (s VDMVDO) GetPosition2D() (float64, float64, error) {
 // GetSpeedOverGround retrieves the speed over ground from the sentence
 func (s VDMVDO) GetSpeedOverGround() (float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
-		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		if positionReport.Sog != speedOverGroundNotAvailable {
+			return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		}
 	}
 	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
-		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		if positionReport.Sog != speedOverGroundNotAvailable {
+			return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		}
 	}
 	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
-		return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		if positionReport.Sog != speedOverGroundNotAvailable {
+			return (unit.Speed(positionReport.Sog) * unit.Knot).MetersPerSecond(), nil
+		}
 	}
 	return 0, fmt.Errorf("value is unavailable")
 }
@@ -466,5 +475,4 @@ func (s VDMVDO) GetETA() (time.Time, error) {
 		return result, nil
 	}
 	return time.Unix(0, 0), fmt.Errorf("value is unavailable")
-
 }

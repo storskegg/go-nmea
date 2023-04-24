@@ -433,6 +433,20 @@ var _ = Describe("VDMVDO", func() {
 				Expect(eta.Zone()).To(Equal("UTC"))
 			})
 		})
+		Context("when having a scheduled position report with invalid SOG", func() {
+			BeforeEach(func() {
+				raws = []string{
+					"!AIVDM,1,1,,A,133P=VPP?w<tSF0l4Q@>4?wv0l8i,0*79",
+				}
+			})
+			It("returns a valid MMSI", func() {
+				Expect(parsed.GetMMSI()).To(Equal("205000090"))
+			})
+			It("returns an error", func() {
+				_, err := parsed.GetSpeedOverGround()
+				Expect(err).To(HaveOccurred())
+			})
+		})
 	})
 	Describe("Getting data from a VDMVDO struct", func() {
 		Context("with a position report", func() {
