@@ -18,12 +18,16 @@ const (
 	// TypeVDO type for VDO sentences
 	TypeVDO = "VDO"
 
-	rateOfTurnNotAvailable             int16       = -128
-	rateOfTurnMaxRightDegreesPerMinute int16       = 127
-	rateOfTurnMaxRightRadiansPerSecond float64     = 0.0206
-	rateOfTurnMaxLeftDegreesPerMinute  int16       = -rateOfTurnMaxRightDegreesPerMinute
-	rateOfTurnMaxLeftRadiansPerSecond  float64     = -rateOfTurnMaxRightRadiansPerSecond
-	speedOverGroundNotAvailable        ais.Field10 = 102.3
+	rateOfTurnNotAvailable             int16               = -128
+	rateOfTurnMaxRightDegreesPerMinute int16               = 127
+	rateOfTurnMaxRightRadiansPerSecond float64             = 0.0206
+	rateOfTurnMaxLeftDegreesPerMinute  int16               = -rateOfTurnMaxRightDegreesPerMinute
+	rateOfTurnMaxLeftRadiansPerSecond  float64             = -rateOfTurnMaxRightRadiansPerSecond
+	speedOverGroundNotAvailable        ais.Field10         = 102.3
+	latitudeNotAvailable               ais.FieldLatLonFine = 91
+	longitudeNotAvailable              ais.FieldLatLonFine = 181
+	trueHeadingNotAvailable            uint16              = 511
+	cogNotAvailable                    ais.Field10         = 360
 )
 
 var navigationStatuses []string = []string{
@@ -370,19 +374,19 @@ func (s VDMVDO) GetRateOfTurn() (float64, error) {
 // GetTrueCourseOverGround retrieves the true course over ground from the sentence
 func (s VDMVDO) GetTrueCourseOverGround() (float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
-		if positionReport.Cog == 360 {
+		if positionReport.Cog == cogNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
 	}
 	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
-		if positionReport.Cog == 360 {
+		if positionReport.Cog == cogNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
 	}
 	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
-		if positionReport.Cog == 360 {
+		if positionReport.Cog == cogNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.Cog) * unit.Degree).Radians(), nil
@@ -393,19 +397,19 @@ func (s VDMVDO) GetTrueCourseOverGround() (float64, error) {
 // GetTrueHeading retrieves the true heading from the sentence
 func (s VDMVDO) GetTrueHeading() (float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
-		if positionReport.TrueHeading == 511 {
+		if positionReport.TrueHeading == trueHeadingNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.TrueHeading) * unit.Degree).Radians(), nil
 	}
 	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
-		if positionReport.TrueHeading == 511 {
+		if positionReport.TrueHeading == trueHeadingNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.TrueHeading) * unit.Degree).Radians(), nil
 	}
 	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
-		if positionReport.TrueHeading == 511 {
+		if positionReport.TrueHeading == trueHeadingNotAvailable {
 			return 0, fmt.Errorf("value is unavailable")
 		}
 		return (unit.Angle(positionReport.TrueHeading) * unit.Degree).Radians(), nil
@@ -416,13 +420,19 @@ func (s VDMVDO) GetTrueHeading() (float64, error) {
 // GetPosition2D retrieves the 2D position from the sentence
 func (s VDMVDO) GetPosition2D() (float64, float64, error) {
 	if positionReport, ok := s.Packet.(ais.PositionReport); ok && positionReport.Valid {
-		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		if positionReport.Latitude != latitudeNotAvailable && positionReport.Longitude != longitudeNotAvailable {
+			return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		}
 	}
 	if positionReport, ok := s.Packet.(ais.StandardClassBPositionReport); ok && positionReport.Valid {
-		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		if positionReport.Latitude != latitudeNotAvailable && positionReport.Longitude != longitudeNotAvailable {
+			return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		}
 	}
 	if positionReport, ok := s.Packet.(ais.ExtendedClassBPositionReport); ok && positionReport.Valid {
-		return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		if positionReport.Latitude != latitudeNotAvailable && positionReport.Longitude != longitudeNotAvailable {
+			return float64(positionReport.Latitude), float64(positionReport.Longitude), nil
+		}
 	}
 	return 0, 0, fmt.Errorf("value is unavailable")
 }
